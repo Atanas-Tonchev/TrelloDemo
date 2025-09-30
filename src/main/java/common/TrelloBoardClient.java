@@ -10,7 +10,6 @@ import io.restassured.response.Response;
 
 
 public class TrelloBoardClient {
-
   private final String apiKey;
   private final String token;
 
@@ -49,12 +48,30 @@ public class TrelloBoardClient {
         .delete("/boards/" + boardId);
   }
 
-  public Response getAllBoards() {
+  private Response getAllBoards() {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
         .queryParam("token", token)
         .when()
         .get("/members/me/boards");
+  }
+
+  public String getBoardIdByName(String boardName) {
+    Response response = getAllBoards();
+    if (response.statusCode() != 200) {
+      return null;
+    } else {
+      return searchBoardByNameAndGetId(boardName);
+    }
+  }
+
+  private String searchBoardByNameAndGetId(String boardName) {
+    Response response = getAllBoards();
+    return response.jsonPath().getList("", Object.class).stream()
+        .filter(board -> ((String) ((java.util.Map<?, ?>) board).get("name")).equals(boardName))
+        .findFirst()
+        .map(board -> (String) ((java.util.Map<?, ?>) board).get("id"))
+        .orElse(null);
   }
 }

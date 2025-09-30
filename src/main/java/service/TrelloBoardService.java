@@ -2,7 +2,9 @@ package service;
 
 import common.TrelloBoardClient;
 import io.restassured.response.Response;
-import util.LogUtil;
+
+import static util.LogUtil.logError;
+import static util.LogUtil.logException;
 
 /**
  * Service class to interact with Trello boards using TrelloBoardClient.
@@ -20,12 +22,12 @@ public class TrelloBoardService {
     try {
       Response response = boardClient.createBoard(name);
       if (response.statusCode() != 200) {
-        LogUtil.getInstance().logError("Failed to create board. Status Code: " + response.statusCode());
+        logError("Failed to create board. Status Code: " + response.statusCode());
       } else {
         boardId = response.jsonPath().getString("id");
       }
     } catch (Exception e) {
-      LogUtil.getInstance().logException("An error occurred while creating the board.", e);
+      logException("An error occurred while creating the board.", e);
     }
     return boardId;
   }
@@ -38,7 +40,7 @@ public class TrelloBoardService {
     boardClient.deleteBoard(boardId).then().statusCode(200);
   }
 
-  public Response getAllBoards() {
-    return boardClient.getAllBoards();
+  public String getBoardIdByName(String boardName) {
+    return boardClient.getBoardIdByName(boardName);
   }
 }
