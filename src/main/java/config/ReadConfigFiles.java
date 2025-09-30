@@ -5,6 +5,8 @@ import util.CommonUtil;
 import util.LogUtil;
 import java.util.Properties;
 
+import static util.LogUtil.logException;
+
 /**
  * Singleton class to read configuration from properties file.
  */
@@ -35,7 +37,7 @@ public class ReadConfigFiles {
       config.setAuthToken(authToken);
       config.setBaseUrl(baseUrl);
     } catch (Exception e) {
-      LogUtil.getInstance().logException("Exception in reading config file: ", e);
+      logException("Exception in reading config file: ", e);
       throw e;
     }
     return config;

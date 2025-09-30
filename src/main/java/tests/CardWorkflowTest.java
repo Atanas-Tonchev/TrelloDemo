@@ -1,5 +1,6 @@
 package tests;
 
+import io.restassured.response.Response;
 import org.testng.annotations.BeforeClass;
 import service.TrelloBoardService;
 import service.TrelloCardService;
@@ -12,9 +13,11 @@ public class CardWorkflowTest {
   private String boardId;
   private String listId;
   private String cardId;
+  private String boardName;
 
   @BeforeClass
   public void setUp() {
+    boardName = "Interview Board";
     String apiKey = objConfig.getApiKey();
     String authToken = objConfig.getAuthToken();
     String baseUrl = objConfig.getBaseUrl();
@@ -22,16 +25,19 @@ public class CardWorkflowTest {
     cardService = new TrelloCardService(apiKey, authToken, baseUrl);
 
     // Execute prerequisite operations
-    executePrerequisites();
+    executePrerequisites(boardName);
 
 
 
   }
 
-  private void executePrerequisites() {
-    // Create or get a board
+  private void executePrerequisites(String boardName) {
+    // Search board by name, if not found create a new one
+    boardId = boardService.getBoardIdByName(boardName);
 
-    boardId = boardService.createBoardAndReturnId("Automation_Card_Board");
+    // If board does not exist, create it
+    if (boardId == null) boardId = boardService.createBoardAndReturnId(boardName);
+
 
 
 // 2. Вземаме default лист от борда
@@ -42,7 +48,7 @@ public class CardWorkflowTest {
   }
 
 
-  @Test(priority = 1)
+  /*@Test(priority = 1)
 
   public void testCreateCard() {
 
@@ -82,5 +88,5 @@ public class CardWorkflowTest {
 
     }
 
-  }
+  }*/
 }

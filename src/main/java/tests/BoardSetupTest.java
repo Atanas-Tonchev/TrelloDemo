@@ -52,7 +52,7 @@ public class BoardSetupTest extends BaseTest {
     try {
       // Create a new board
       logInfo("Creating board with name: " + newBoardName);
-      boardId = boardService.createBoardAndReturnId("Automation_Test_Board");
+      boardId = boardService.createBoardAndReturnId(newBoardName);
 
       // Verify board creation
       assertNotNull(boardId, "Board ID should not be null");

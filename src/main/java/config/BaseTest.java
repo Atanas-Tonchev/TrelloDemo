@@ -3,6 +3,8 @@ package config;
 import common.AppConfig;
 import util.LogUtil;
 
+import static util.LogUtil.logException;
+
 /**
  * Base test class to initialize configuration.
  */
@@ -15,7 +17,7 @@ public class BaseTest {
       ReadConfigFiles configReader = ReadConfigFiles.getInstance();
       objConfig = configReader.readConfiguration();
     } catch (Exception e) {
-      LogUtil.getInstance().logException("Failed to read configuration: ", e);
+      logException("Failed to read configuration: ", e);
     }
   }
 }
