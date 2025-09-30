@@ -56,7 +56,7 @@ public class BoardAndListSetupTest extends BaseTest {
 
       // Verify board creation
       assertNotNull(boardId, "Board ID should not be null");
-      LogUtil.getInstance().logInfo("Created successfully board");
+      LogUtil.getInstance().logInfo("Board created successfully!");
     } catch (Exception e) {
       LogUtil.getInstance().logException("Exception in testCreateBoard: ", e);
       throw e;
