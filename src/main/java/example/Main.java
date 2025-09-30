@@ -1,6 +1,7 @@
 package example;
 
-import customlogging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -9,7 +10,7 @@ public class Main {
   public static void main(String[] args) {
     //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
     // to see how IntelliJ IDEA suggests fixing it.
-    Logger logger = new Logger(Logger.LogLevel.DEBUG, "app.log");
+    Logger logger = (Logger) LogManager.getLogger(Main.class);
 
 
     logger.debug("This is a debug message.");

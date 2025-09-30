@@ -3,10 +3,22 @@ package config;
 import common.AppConfig;
 import util.CommonUtil;
 import util.LogUtil;
-
 import java.util.Properties;
 
 public class ReadConfigFiles {
+  private static ReadConfigFiles instance;
+
+  private ReadConfigFiles() {
+    // Private constructor to prevent instantiation
+  }
+
+  public static synchronized ReadConfigFiles getInstance() {
+    if (instance == null) {
+      instance = new ReadConfigFiles();
+    }
+    return instance;
+  }
+
   public AppConfig readConfiguration() throws Exception {
     AppConfig config = new AppConfig(); // Instantiate AppConfig
     try {
@@ -14,10 +26,12 @@ public class ReadConfigFiles {
           CommonUtil.loadProperties(ReadConfigFiles.class, "app.config.properties");
       String apiKey = properties.getProperty("ApiKey");
       String authToken = properties.getProperty("AuthToken");
+      String baseUrl = properties.getProperty("BaseUrl");
       config.setApiKey(apiKey);
       config.setAuthToken(authToken);
+      config.setBaseUrl(baseUrl);
     } catch (Exception e) {
-      LogUtil.logError("Exception in reading config file: " + e.getMessage());
+      LogUtil.getInstance().logException("Exception in reading config file: ", e);
       throw e;
     }
     return config;
