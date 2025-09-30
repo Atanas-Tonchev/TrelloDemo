@@ -3,6 +3,8 @@ package service;
 import common.TrelloListClient;
 import io.restassured.response.Response;
 
+import java.util.LinkedList;
+
 public class TrelloListService {
   private final TrelloListClient listClient;
 
@@ -26,5 +28,22 @@ public class TrelloListService {
     Response response = listClient.createList(boardId, listName);
     response.then().statusCode(200);
     return response.jsonPath().getString("id");
+  }
+
+  public String getListIdByName(String listName, String boardId) {
+    return listClient.getListIdByName(listName, boardId);
+  }
+
+  public void updateListName(String listId, String newName) {
+    Response response = listClient.updateListName(listId, newName);
+    response.then().statusCode(200);
+  }
+
+  public LinkedList<String> getAllExpectedListNames() {
+    LinkedList<String> listNames = new LinkedList<>();
+    listNames.add("Done");
+    listNames.add("In Progress");
+    listNames.add("To Do");
+    return listNames;
   }
 }

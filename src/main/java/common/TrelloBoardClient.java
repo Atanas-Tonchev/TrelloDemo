@@ -68,10 +68,10 @@ public class TrelloBoardClient {
 
   private String searchBoardByNameAndGetId(String boardName) {
     Response response = getAllBoards();
-    return response.jsonPath().getList("", Object.class).stream()
-        .filter(board -> ((String) ((java.util.Map<?, ?>) board).get("name")).equals(boardName))
+    return response.jsonPath().getList("", java.util.Map.class).stream()
+        .filter(board -> board.get("name") != null && board.get("name").equals(boardName))
         .findFirst()
-        .map(board -> (String) ((java.util.Map<?, ?>) board).get("id"))
+        .map(board -> board.get("id").toString())
         .orElse(null);
   }
 }

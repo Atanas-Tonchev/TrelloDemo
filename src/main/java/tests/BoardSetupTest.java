@@ -32,13 +32,13 @@ public class BoardSetupTest extends BaseTest {
     logInfo("Setting up BoardSetupTest...");
     try {
       boardId = null;
-      listNames = getAllListNames();
       newBoardName = "Interview Board";
       String apiKey = objConfig.getApiKey();
       String authToken = objConfig.getAuthToken();
       String baseUrl = objConfig.getBaseUrl();
       boardService = new TrelloBoardService(apiKey, authToken, baseUrl);
       trelloListService = new TrelloListService(apiKey, authToken, baseUrl);
+      listNames = trelloListService.getAllExpectedListNames();
       logInfo("BoardSetupTest setup completed.");
     } catch (Exception e) {
       logException("Exception in BoardSetupTest setup: ", e);
@@ -117,14 +117,6 @@ public class BoardSetupTest extends BaseTest {
       logInfo("Board ID is null, cannot fetch lists.");
       return new ArrayList<>();
     }
-  }
-
-  private LinkedList<String> getAllListNames() {
-    LinkedList<String> listNames = new LinkedList<>();
-    listNames.add("Done");
-    listNames.add("In Progress");
-    listNames.add("To Do");
-    return listNames;
   }
 
   // End Region

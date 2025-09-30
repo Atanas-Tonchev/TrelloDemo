@@ -36,6 +36,31 @@ public class TrelloListClient {
         .get("/lists/" + listId);
   }
 
+  public String getListIdByName(String listName, String boardId) {
+    Response response = getAllListsOnBoard(boardId);
+    if (response.statusCode() != 200) {
+      return null;
+    } else {
+      return searchListIdByName(listName, boardId);
+    }
+  }
+
+  private String searchListIdByName(String listName, String boardId) {
+    Response response = getAllListsOnBoard(boardId);
+    return response.jsonPath().getList("", java.util.Map.class).stream()
+        .filter(list -> list.get("name") != null && list.get("name").equals(listName))
+        .findFirst()
+        .map(list -> list.get("id").toString())
+        .orElse(null);
+    /*return RestAssured
+        .given()
+        .queryParam("key", apiKey)
+        .queryParam("token", token)
+        .queryParam("fields", "name")
+        .when()
+        .get("/lists/" + listName);*/
+  }
+
   public Response getAllListsOnBoard(String boardId) {
     return RestAssured
         .given()
@@ -56,5 +81,15 @@ public class TrelloListClient {
         .queryParam("value", "true")
         .when()
         .put("/lists/" + listId + "/closed");
+  }
+
+  public Response updateListName(String listId, String newName) {
+    return RestAssured
+        .given()
+        .queryParam("key", apiKey)
+        .queryParam("token", token)
+        .queryParam("value", newName)
+        .when()
+        .put("/lists/" + listId + "/name");
   }
 }
