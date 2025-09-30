@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import static config.BaseTest.objConfig;
-import static org.testng.Assert.assertEqualsNoOrder;
 import static org.testng.Assert.assertNotNull;
 import static util.LogUtil.logException;
 import static util.LogUtil.logInfo;
