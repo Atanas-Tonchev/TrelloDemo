@@ -4,6 +4,10 @@ import common.TrelloBoardClient;
 import io.restassured.response.Response;
 import util.LogUtil;
 
+/**
+ * Service class to interact with Trello boards using TrelloBoardClient.
+ */
+
 public class TrelloBoardService {
   private final TrelloBoardClient boardClient;
 

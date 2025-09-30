@@ -5,6 +5,10 @@ import util.CommonUtil;
 import util.LogUtil;
 import java.util.Properties;
 
+/**
+ * Singleton class to read configuration from properties file.
+ */
+
 public class ReadConfigFiles {
   private static ReadConfigFiles instance;
 

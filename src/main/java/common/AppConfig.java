@@ -1,5 +1,9 @@
 package common;
 
+/**
+ * Class to hold application configuration details.
+ */
+
 public class AppConfig {
   private String ApiKey;
   private String AuthToken;

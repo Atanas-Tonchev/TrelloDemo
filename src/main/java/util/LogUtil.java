@@ -3,6 +3,11 @@ package util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * LogUtil is a singleton utility class for logging messages and exceptions using Log4j2.
+ * It provides methods to log informational messages, error messages, and exceptions.
+ */
+
 public class LogUtil {
   private static LogUtil instance;
   private final Logger logger;

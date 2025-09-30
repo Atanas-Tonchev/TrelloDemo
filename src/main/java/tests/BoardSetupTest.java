@@ -8,6 +8,10 @@ import static org.testng.Assert.*;
 import service.TrelloBoardService;
 import util.LogUtil;
 
+/**
+ * Test class to set up and verify Trello board operations.
+ */
+
 public class BoardSetupTest extends BaseTest {
   private TrelloBoardService boardService;
   private String boardId;

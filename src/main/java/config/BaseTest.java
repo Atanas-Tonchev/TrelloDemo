@@ -3,6 +3,10 @@ package config;
 import common.AppConfig;
 import util.LogUtil;
 
+/**
+ * Base test class to initialize configuration.
+ */
+
 public class BaseTest {
   public static AppConfig objConfig;
 
