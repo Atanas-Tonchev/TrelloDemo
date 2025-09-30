@@ -3,11 +3,7 @@ package config;
 import common.AppConfig;
 import util.LogUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class BaseTest {
-  public static final Map<String, String> apiendpoints = new HashMap<>();
   public static AppConfig objConfig;
 
   static {
