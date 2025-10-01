@@ -56,6 +56,7 @@ public class CardWorkflowTest {
       // Execute prerequisite operations
       executePrerequisites();
       isTestSuccess = false;
+      logInfo("CardWorkflowTest setup completed.");
     } catch (Exception e) {
       logException("Exception in setUp: " + e.getMessage(), e);
     }
@@ -86,11 +87,10 @@ public class CardWorkflowTest {
         logInfo("Test PASSED");
       }
     }
-
   }
 
 
-@Test(priority = 2, dependsOnMethods = "testCreateCard")
+@Test(priority = 2, dependsOnMethods = "testCreateTitledCard")
 
   public void testGetCard() {
 
