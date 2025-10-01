@@ -1,10 +1,10 @@
 package models;
 
-public class TrelloBoardObject {
+public class TrelloBoardModel {
   private final String name;
   private String id;
 
-  public TrelloBoardObject(String name) {
+  public TrelloBoardModel(String name) {
     this.name = name;
   }
 

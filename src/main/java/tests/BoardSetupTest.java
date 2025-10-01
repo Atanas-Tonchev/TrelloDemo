@@ -2,7 +2,7 @@ package tests;
 
 import configs.BaseTest;
 import io.restassured.response.Response;
-import models.TrelloBoardObject;
+import models.TrelloBoardModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class BoardSetupTest extends BaseTest {
 
-  private TrelloBoardObject trelloBoardObject;
+  private TrelloBoardModel trelloBoardModel;
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
   private BoardValidationUtil boardValidationUtil;
@@ -40,8 +40,8 @@ public class BoardSetupTest extends BaseTest {
   public void setUp() {
     logInfo("Setting up BoardSetupTest...");
     try {
-      trelloBoardObject = new TrelloBoardObject(BOARD_NAME);
-      trelloBoardObject.setId(null);
+      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
+      trelloBoardModel.setId(null);
       boardValidationUtil = new BoardValidationUtil();
       listValidationUtil = new ListsValidationUtil();
       isTestSuccess = false;
@@ -64,13 +64,13 @@ public class BoardSetupTest extends BaseTest {
     try {
       // Create a new board
       logInfo("Starting test: testCreateBoard");
-      response = boardService.createBoard(trelloBoardObject.getName());
+      response = boardService.createBoard(trelloBoardModel.getName());
       // Verify board creation
       boardValidationUtil.assertStatusCode(response, 200);
       // Extract and set the board ID, only after successful creation
-      trelloBoardObject.setId(boardService.getBoardIdByCreationResponse(response));
+      trelloBoardModel.setId(boardService.getBoardIdByCreationResponse(response));
       // Validate rest of the response
-      boardValidationUtil.validateBoard(response, trelloBoardObject.getName(), trelloBoardObject.getId());
+      boardValidationUtil.validateBoard(response, trelloBoardModel.getName(), trelloBoardModel.getId());
       // mark test as success
       isTestSuccess = true;
     } catch (Exception e) {
@@ -89,7 +89,7 @@ public class BoardSetupTest extends BaseTest {
   @Test(priority = 2, dependsOnMethods = "testCreateBoard")
   public void testCreateListsOnBoard() {
     logInfo("Starting test: testCreateListsOnBoard");
-    String boardId = trelloBoardObject.getId();
+    String boardId = trelloBoardModel.getId();
     try {
       // Check if there are any lists exist on the board and clean them ,
       // because by default Trello creates 3 lists on new board witch are not the same as our default lists

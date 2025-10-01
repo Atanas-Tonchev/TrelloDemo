@@ -3,7 +3,7 @@ package services;
 
 import clients.TrelloBoardClient;
 import io.restassured.response.Response;
-import models.TrelloBoardObject;
+import models.TrelloBoardModel;
 
 public class TrelloBoardServiceImpl implements ITrelloBoardService {
   private final TrelloBoardClient client;
@@ -18,8 +18,8 @@ public class TrelloBoardServiceImpl implements ITrelloBoardService {
   }
 
   @Override
-  public String createBoardAndReturnId(TrelloBoardObject trelloBoardObject) {
-    return client.createBoard(trelloBoardObject.getName()).jsonPath().getString("id");
+  public String createBoardAndReturnId(TrelloBoardModel trelloBoardModel) {
+    return client.createBoard(trelloBoardModel.getName()).jsonPath().getString("id");
   }
 
   @Override

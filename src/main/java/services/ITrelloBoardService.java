@@ -2,11 +2,11 @@
 package services;
 
 import io.restassured.response.Response;
-import models.TrelloBoardObject;
+import models.TrelloBoardModel;
 
 public interface ITrelloBoardService {
   Response createBoard(String boardName);
-  String createBoardAndReturnId(TrelloBoardObject trelloBoardObject);
+  String createBoardAndReturnId(TrelloBoardModel trelloBoardModel);
   String getBoardIdByCreationResponse(Response creationResponse);
   Response getBoardById(String boardId);
   String getBoardIdByName(String boardName);

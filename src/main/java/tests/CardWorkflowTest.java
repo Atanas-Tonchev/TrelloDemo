@@ -1,7 +1,7 @@
 package tests;
 
 import io.restassured.response.Response;
-import models.TrelloBoardObject;
+import models.TrelloBoardModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -34,7 +34,7 @@ public class CardWorkflowTest {
   private ListsValidationUtil listsValidationUtil;
   private CardValidationUtil cardValidationUtil;
   private BoardValidationUtil boardValidationUtil;
-  private TrelloBoardObject trelloBoardObject;
+  private TrelloBoardModel trelloBoardModel;
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
 
@@ -51,7 +51,7 @@ public class CardWorkflowTest {
       listsValidationUtil = new ListsValidationUtil();
       cardValidationUtil = new CardValidationUtil();
       boardValidationUtil = new BoardValidationUtil();
-      trelloBoardObject = new TrelloBoardObject(BOARD_NAME);
+      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       // Execute prerequisite operations
       executePrerequisites();
       isTestSuccess = false;
@@ -107,7 +107,7 @@ public class CardWorkflowTest {
       // Create board if not found
       if (boardId == null) {
         logInfo("Board not found, creating a new board.");
-        boardId = boardService.createBoardAndReturnId(trelloBoardObject);
+        boardId = boardService.createBoardAndReturnId(trelloBoardModel);
         // Validate board creation
         boardValidationUtil.assertIdNotNull(boardId);
       }
