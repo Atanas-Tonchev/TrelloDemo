@@ -1,8 +1,7 @@
-package config;
+package configs;
 
-import common.AppConfig;
 import util.CommonUtil;
-import util.LogUtil;
+
 import java.util.Properties;
 
 import static util.LogUtil.logException;

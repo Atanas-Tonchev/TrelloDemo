@@ -1,8 +1,6 @@
-package service;
+package services;
 
-import common.TrelloBoardClient;
-import common.TrelloCardClient;
-import io.restassured.RestAssured;
+import clients.TrelloCardClient;
 
 public class TrelloCardService {
   private final TrelloCardClient cardClient;

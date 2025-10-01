@@ -1,30 +1,19 @@
-package common;
+package clients;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
-/**
- * TrelloBoardClient is a client for interacting with the Trello API to manage boards.
- * It provides methods to create, retrieve, and delete Trello boards using the provided API key and token.
- */
+public class TrelloBoardClient extends AbstractTrelloClient{
 
-
-public class TrelloBoardClient {
-  private final String apiKey;
-  private final String token;
-
-  public TrelloBoardClient(String apiKey, String token, String baseURI) {
-    this.apiKey = apiKey;
-    this.token = token;
-    RestAssured.baseURI = baseURI;
+  public TrelloBoardClient(String apiKey, String authToken, String baseUrl) {
+    super(apiKey, authToken, baseUrl);
   }
-
 
   public Response createBoard(String name) {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .queryParam("name", name)
         .when()
         .post("/boards/");
@@ -34,27 +23,22 @@ public class TrelloBoardClient {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .when()
         .get("/boards/" + boardId);
+  }
+
+  public String getBoardIdByCreationResponse(Response creationResponse) {
+    return creationResponse.jsonPath().getString("id");
   }
 
   public Response deleteBoard(String boardId) {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .when()
         .delete("/boards/" + boardId);
-  }
-
-  private Response getAllBoards() {
-    return RestAssured
-        .given()
-        .queryParam("key", apiKey)
-        .queryParam("token", token)
-        .when()
-        .get("/members/me/boards");
   }
 
   public String getBoardIdByName(String boardName) {
@@ -66,6 +50,15 @@ public class TrelloBoardClient {
     }
   }
 
+  private Response getAllBoards() {
+    return RestAssured
+        .given()
+        .queryParam("key", apiKey)
+        .queryParam("token", authToken)
+        .when()
+        .get("/members/me/boards");
+  }
+
   private String searchBoardByNameAndGetId(String boardName) {
     Response response = getAllBoards();
     return response.jsonPath().getList("", java.util.Map.class).stream()
@@ -74,4 +67,5 @@ public class TrelloBoardClient {
         .map(board -> board.get("id").toString())
         .orElse(null);
   }
+
 }

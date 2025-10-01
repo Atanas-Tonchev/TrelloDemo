@@ -1,25 +1,19 @@
-package common;
+package clients;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
-public class TrelloListClient {
+public class TrelloListClient extends AbstractTrelloClient{
 
-  private final String apiKey;
-  private final String token;
-
-  public TrelloListClient(String apiKey, String token, String baseURI) {
-    this.apiKey = apiKey;
-    this.token = token;
-    RestAssured.baseURI = baseURI;
-
+  public TrelloListClient(String apiKey, String authToken, String baseUrl) {
+    super(apiKey, authToken, baseUrl);
   }
 
   public Response createList(String boardId, String name) {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .queryParam("idBoard", boardId)
         .queryParam("name", name)
         .when()
@@ -31,7 +25,7 @@ public class TrelloListClient {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .when()
         .get("/lists/" + listId);
   }
@@ -52,20 +46,13 @@ public class TrelloListClient {
         .findFirst()
         .map(list -> list.get("id").toString())
         .orElse(null);
-    /*return RestAssured
-        .given()
-        .queryParam("key", apiKey)
-        .queryParam("token", token)
-        .queryParam("fields", "name")
-        .when()
-        .get("/lists/" + listName);*/
   }
 
   public Response getAllListsOnBoard(String boardId) {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .when()
         .get("/boards/" + boardId + "/lists");
   }
@@ -77,7 +64,7 @@ public class TrelloListClient {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .queryParam("value", "true")
         .when()
         .put("/lists/" + listId + "/closed");
@@ -87,7 +74,7 @@ public class TrelloListClient {
     return RestAssured
         .given()
         .queryParam("key", apiKey)
-        .queryParam("token", token)
+        .queryParam("token", authToken)
         .queryParam("value", newName)
         .when()
         .put("/lists/" + listId + "/name");

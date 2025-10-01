@@ -1,7 +1,4 @@
-package config;
-
-import common.AppConfig;
-import util.LogUtil;
+package configs;
 
 import static util.LogUtil.logException;
 

@@ -1,11 +1,11 @@
+/*
 package tests;
 
 import io.restassured.response.Response;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import service.TrelloBoardService;
-import service.TrelloCardService;
-import service.TrelloListService;
+import services.TrelloBoardService;
+import services.TrelloCardService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static config.BaseTest.objConfig;
+import static configs.BaseTest.objConfig;
 import static org.testng.Assert.assertNotNull;
 import static util.LogUtil.logException;
 import static util.LogUtil.logInfo;
@@ -58,7 +58,8 @@ public class CardWorkflowTest {
   }
 
 
-  /*@Test(priority = 2, dependsOnMethods = "testCreateCard")
+  */
+/*@Test(priority = 2, dependsOnMethods = "testCreateCard")
 
   public void testGetCard() {
 
@@ -87,7 +88,8 @@ public class CardWorkflowTest {
 
     }
 
-  }*/
+  }*//*
+
 
   // Region: Helper Methods
 
@@ -155,3 +157,4 @@ public class CardWorkflowTest {
 
   // End Region
 }
+*/

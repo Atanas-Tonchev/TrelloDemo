@@ -1,4 +1,4 @@
-package common;
+package configs;
 
 /**
  * Class to hold application configuration details.
