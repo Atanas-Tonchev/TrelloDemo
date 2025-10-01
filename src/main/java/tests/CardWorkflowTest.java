@@ -2,6 +2,7 @@ package tests;
 
 import io.restassured.response.Response;
 import models.TrelloBoardModel;
+import models.TrelloCardModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -14,14 +15,17 @@ import util.ListsValidationUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static configs.BaseTest.objConfig;
 import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.CARD_NAME;
 import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
-import static constants.AutomationConstants.LIST_NAME_IN_PROGRESS;
+import static constants.AutomationConstants.LIST_NAME_TODO;
 import static org.testng.Assert.assertNotNull;
 import static util.LogUtil.logException;
 import static util.LogUtil.logInfo;
@@ -35,6 +39,7 @@ public class CardWorkflowTest {
   private CardValidationUtil cardValidationUtil;
   private BoardValidationUtil boardValidationUtil;
   private TrelloBoardModel trelloBoardModel;
+  private TrelloCardModel trelloCardModel;
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
 
@@ -67,14 +72,21 @@ public class CardWorkflowTest {
   public void testCreateTitledCard() {
     logInfo("Starting test: testCreateTitledCard");
     try {
-      // Create a card in the "In Progress" list
-      String listId = mapOfLists.get(LIST_NAME_IN_PROGRESS);
+      // Create a card in the "To Do" list
+      String listId = mapOfLists.get(LIST_NAME_TODO);
+
       // Verify list ID is not null, only then proceed
       assertNotNull(listId, "'To Do' list ID should not be null");
+
       Response response = cardService.createCard(listId, CARD_NAME);
+      // Initialize card model for further tests
+      trelloCardModel = new TrelloCardModel(CARD_NAME, listId);
+      trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
+
       // Validate response status code and body
       cardValidationUtil.assertStatusCode(response, 200);
-      cardValidationUtil.validateCard(response, CARD_NAME, listId);
+      cardValidationUtil.validateCardCreation(response, CARD_NAME, listId);
+
       // Mark test as successful
       isTestSuccess = true;
     } catch (Exception e) {
@@ -89,12 +101,42 @@ public class CardWorkflowTest {
   }
 
 
-@Test(priority = 2, dependsOnMethods = "testCreateTitledCard")
+  @Test(priority = 2, dependsOnMethods = "testCreateTitledCard")
+  public void testMoveCard() {
+    logInfo("Starting test: testMoveCard");
+    try {
+      // Move the card through all lists it hasn't been in yet
+      Set<String> visitedLists = new HashSet<>();
+      visitedLists.add(trelloCardModel.getIdList()); // Start with the initial list
 
-  public void testGetCard() {
+      for (Map.Entry<String, String> entry : mapOfLists.entrySet()) {
+        String targetListId = entry.getValue();
 
+        // Skip if already visited
+        if (visitedLists.contains(targetListId)) continue;
 
+        // Move the card
+        Response moveResponse = cardService.moveCardToList(trelloCardModel.getId(), targetListId);
 
+        // Validate move response
+        cardValidationUtil.assertStatusCode(moveResponse, 200);
+
+        // Verify the card is in the expected list by fetching it and validating its 'idList'
+        cardValidationUtil.validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
+
+        // Mark this list as visited
+        visitedLists.add(targetListId);
+      }
+      isTestSuccess = true;
+    } catch (Exception e) {
+      logException("Exception in testMoveCard: " + e.getMessage(), e);
+    } finally {
+      if (!isTestSuccess) {
+        logInfo("Test FAILED");
+      } else {
+        logInfo("Test PASSED");
+      }
+    }
   }
 
   // Region: Helper Methods
@@ -104,6 +146,7 @@ public class CardWorkflowTest {
     try {
       // Search board by name, if not found create a new one with all expected lists
       String boardId = boardService.getBoardIdByName(BOARD_NAME);
+
       // Create board if not found
       if (boardId == null) {
         logInfo("Board not found, creating a new board.");
@@ -111,6 +154,7 @@ public class CardWorkflowTest {
         // Validate board creation
         boardValidationUtil.assertIdNotNull(boardId);
       }
+
       mapOfLists = manageBoardLists(boardId);
     } catch (Exception e) {
       logException("Exception in executePrerequisites: " + e.getMessage(), e);
@@ -120,8 +164,9 @@ public class CardWorkflowTest {
 
   private Map<String, String> manageBoardLists(String boardId) {
     logInfo("Managing board lists.");
-    Map<String, String> mapOfLists = new HashMap<>();
+    Map<String, String> mapOfLists = new LinkedHashMap<>();
     List<String> actualList = getAllListByEntity(boardId, "name");
+
     // Update existing lists or create new ones as necessary
     if (!actualList.isEmpty()) {
       logInfo("Existing lists found on the board, updating if necessary.");

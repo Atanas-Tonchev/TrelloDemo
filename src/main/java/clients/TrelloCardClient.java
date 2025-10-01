@@ -20,13 +20,8 @@ public class TrelloCardClient extends AbstractTrelloClient{
         .post("/cards");
   }
 
-  public Response getCard(String cardId) {
-    return RestAssured
-        .given()
-        .queryParam("key", apiKey)
-        .queryParam("token", authToken)
-        .when()
-        .get("/cards/" + cardId);
+  public String getCardIdByResponse(Response response) {
+    return response.jsonPath().getString("id");
   }
 
   public Response moveCardToList(String cardId, String listId) {
@@ -37,5 +32,14 @@ public class TrelloCardClient extends AbstractTrelloClient{
         .queryParam("idList", listId)
         .when()
         .put("/cards/" + cardId);
+  }
+
+  public Response getCardById(String cardId) {
+    return RestAssured
+        .given()
+        .queryParam("key", apiKey)
+        .queryParam("token", authToken)
+        .when()
+        .get("/cards/" + cardId);
   }
 }

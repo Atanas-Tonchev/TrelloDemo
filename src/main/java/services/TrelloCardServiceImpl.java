@@ -21,7 +21,12 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
   }
 
   @Override
-  public Response getCard(String cardId) {
-    return client.getCard(cardId);
+  public String getCardIdByCreationResponse(Response createCardResponse) {
+    return client.getCardIdByResponse(createCardResponse);
+  }
+
+  @Override
+  public Response getCardById(String cardId) {
+    return client.getCardById(cardId);
   }
 }
