@@ -65,12 +65,16 @@ public class BoardSetupTest extends BaseTest {
       // Create a new board
       logInfo("Starting test: testCreateBoard");
       response = boardService.createBoard(trelloBoardModel.getName());
+
       // Verify board creation
       boardValidationUtil.assertStatusCode(response, 200);
+
       // Extract and set the board ID, only after successful creation
       trelloBoardModel.setId(boardService.getBoardIdByCreationResponse(response));
+
       // Validate rest of the response
       boardValidationUtil.validateBoard(response, trelloBoardModel.getName(), trelloBoardModel.getId());
+
       // mark test as success
       isTestSuccess = true;
     } catch (Exception e) {
@@ -99,16 +103,21 @@ public class BoardSetupTest extends BaseTest {
       List<String> createdListIds = new ArrayList<>();
       for (String listName : listNames) {
         response = trelloListService.createList(boardId, listName);
+
         // Verify list creation
         listValidationUtil.assertStatusCode(response, 200);
+
         // Extract list ID from the response, only after successful creation
         String listId = trelloListService.getListIdByName(listName,boardId);
+
         // Validate response body
         listValidationUtil.validateListResponseBody(response, listName, listId);
         createdListIds.add(listId);
       }
+
       // Validate all created lists belong to the correct board
       listValidationUtil.validateAllLists(createdListIds, listNames, boardId, trelloListService);
+
       // mark test as success
       isTestSuccess = true;
     } catch (Exception e) {
