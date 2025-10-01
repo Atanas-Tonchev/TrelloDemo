@@ -2,7 +2,7 @@
 package services;
 
 import io.restassured.response.Response;
-import objects.TrelloBoardObject;
+import models.TrelloBoardObject;
 
 public interface ITrelloBoardService {
   Response createBoard(String boardName);

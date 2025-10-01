@@ -2,7 +2,7 @@ package tests;
 
 import configs.BaseTest;
 import io.restassured.response.Response;
-import objects.TrelloBoardObject;
+import models.TrelloBoardObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

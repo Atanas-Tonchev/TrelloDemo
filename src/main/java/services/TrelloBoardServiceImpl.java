@@ -3,7 +3,7 @@ package services;
 
 import clients.TrelloBoardClient;
 import io.restassured.response.Response;
-import objects.TrelloBoardObject;
+import models.TrelloBoardObject;
 
 public class TrelloBoardServiceImpl implements ITrelloBoardService {
   private final TrelloBoardClient client;
