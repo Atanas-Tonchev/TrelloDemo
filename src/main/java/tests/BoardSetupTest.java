@@ -9,16 +9,13 @@ import org.testng.annotations.Test;
 
 import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
-import static org.testng.Assert.*;
 import static util.LogUtil.logException;
 import static util.LogUtil.logInfo;
-import static util.ValidationUtil.assertCreationFields;
-import static util.ValidationUtil.assertIdNotNull;
-import static util.ValidationUtil.assertJsonObject;
-import static util.ValidationUtil.assertStatusCode;
 
 import services.TrelloBoardServiceImpl;
 import services.TrelloListServiceImpl;
+import util.BoardValidationUtil;
+import util.ListsValidationUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -33,6 +30,8 @@ public class BoardSetupTest extends BaseTest {
   private TrelloBoardObject trelloBoardObject;
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
+  private BoardValidationUtil boardValidationUtil;
+  private ListsValidationUtil listValidationUtil;
   private LinkedList<String> listNames;
   private boolean isTestSuccess;
   private Response response;
@@ -43,6 +42,8 @@ public class BoardSetupTest extends BaseTest {
     try {
       trelloBoardObject = new TrelloBoardObject(BOARD_NAME);
       trelloBoardObject.setId(null);
+      boardValidationUtil = new BoardValidationUtil();
+      listValidationUtil = new ListsValidationUtil();
       isTestSuccess = false;
       String apiKey = objConfig.getApiKey();
       String authToken = objConfig.getAuthToken();
@@ -62,18 +63,14 @@ public class BoardSetupTest extends BaseTest {
   public void testCreateBoard() {
     try {
       // Create a new board
-      logInfo("Creating board with name: " + trelloBoardObject.getName());
+      logInfo("Starting create board test...");
       response = boardService.createBoard(trelloBoardObject.getName());
       // Verify board creation
-      assertStatusCode(response, 200);
-      // Verify the response body is a valid JSON object
-      assertJsonObject(response);
-      // Verify the response body contains expected fields
-      assertCreationFields(response, trelloBoardObject.getName());
-      // Verify the board ID is not null
+      boardValidationUtil.assertStatusCode(response, 200);
+      // Extract and set the board ID, only after successful creation
       trelloBoardObject.setId(boardService.getBoardIdByCreationResponse(response));
-      assertIdNotNull(trelloBoardObject.getId());
-      logInfo("Board created successfully.");
+      // Validate rest of the response
+      boardValidationUtil.validateBoard(response, trelloBoardObject.getName(), trelloBoardObject.getId());
       // mark test as success
       isTestSuccess = true;
     } catch (Exception e) {
@@ -90,11 +87,10 @@ public class BoardSetupTest extends BaseTest {
   }
 
   @Test(priority = 2, dependsOnMethods = "testCreateBoard")
-  public void createListsOnBoard() {
+  public void testCreateListsOnBoard() {
+    logInfo("Starting create lists on board test...");
     String boardId = trelloBoardObject.getId();
-    String boardName = trelloBoardObject.getName();
     try {
-      logInfo("Starting create Lists On Board: " + boardName + " with ID: " + boardId);
       // Check if there are any lists exist on the board and clean them ,
       // because by default Trello creates 3 lists on new board witch are not the same as our default lists
       cleanAllBoardList(boardId);
@@ -103,32 +99,16 @@ public class BoardSetupTest extends BaseTest {
       List<String> createdListIds = new ArrayList<>();
       for (String listName : listNames) {
         response = trelloListService.createList(boardId, listName);
-        // Verify list creation response
-        assertStatusCode(response, 200);
+        // Verify list creation
+        listValidationUtil.assertStatusCode(response, 200);
+        // Extract list ID from the response, only after successful creation
         String listId = trelloListService.getListIdByName(listName,boardId);
-        // Verify the list ID is not null
-        assertIdNotNull(listId);
-        // Verify the response body is a valid JSON object
-        assertJsonObject(response);
-        // Verify the response body contains expected fields
-        assertCreationFields(response, listName);
+        // Validate response body
+        listValidationUtil.validateListResponseBody(response, listName, listId);
         createdListIds.add(listId);
       }
-
-      // Verify lists creation
-      assertEquals(createdListIds.size(), listNames.size(), "Number of created lists should match");
-      logInfo("All lists created successfully on the board!");
-
-      // Verify that all three lists are created and belong to the newly created board
-      List<String> fetchedListByEntity = getAllListByEntity(boardId, "id");
-      assertEqualsNoOrder(fetchedListByEntity.toArray(), createdListIds.toArray(), "Fetched list IDs should match created list IDs");
-      logInfo("Verified all three lists are created");
-
-      fetchedListByEntity = getAllListByEntity(boardId, "idBoard");
-      for (String idBoard : fetchedListByEntity) {
-        assertEquals(idBoard, boardId, "List should belong to the correct board");
-      }
-      logInfo("All lists verified to belong to the correct board.");
+      // Validate all created lists belong to the correct board
+      listValidationUtil.validateAllLists(createdListIds, listNames, boardId, trelloListService);
       // mark test as success
       isTestSuccess = true;
     } catch (Exception e) {
@@ -144,45 +124,6 @@ public class BoardSetupTest extends BaseTest {
   }
 
 
-  /*@Test(priority = 2, dependsOnMethods = "testCreateBoard")
-  public void createListsOnBoard() {
-    String boardId = trelloBoardObject.getId();
-    String boardName = trelloBoardObject.getName();
-    try {
-      logInfo("Starting create Lists On Board: " + boardName + " with ID: " + boardId);
-      // Check if there are any lists exist on the board and clean them ,
-      // because by default Trello creates 3 lists on new board witch are not the same as our default lists
-      cleanAllBoardList(boardId);
-
-      // Create lists on the board
-      List<String> createdListIds = new ArrayList<>();
-      for (String listName : listNames) {
-        String listId = trelloListService.createListOnBoardAndReturnId(boardId, listName);
-        assertIdNotNull(listId);
-        createdListIds.add(listId);
-      }
-
-      // Verify lists creation
-      assertEquals(createdListIds.size(), listNames.size(), "Number of created lists should match");
-      logInfo("All lists created successfully on the board!");
-
-      // Verify that all three lists are created and belong to the newly created board
-      List<String> fetchedListByEntity = getAllListByEntity(boardId, "id");
-      assertEqualsNoOrder(fetchedListByEntity.toArray(), createdListIds.toArray(), "Fetched list IDs should match created list IDs");
-      logInfo("Verified all three lists are created");
-
-      fetchedListByEntity = getAllListByEntity(boardId, "idBoard");
-      for (String idBoard : fetchedListByEntity) {
-        assertEquals(idBoard, boardId, "List should belong to the correct board");
-      }
-      logInfo("All lists verified to belong to the correct board.");
-
-    } catch (Exception e) {
-      logException("Exception in createListsOnBoard: ", e);
-      throw e;
-    }
-  }*/
-
   // Region Helper Methods
 
   public void cleanAllBoardList(String boardId) {
@@ -191,7 +132,8 @@ public class BoardSetupTest extends BaseTest {
     if (allListIds != null && !allListIds.isEmpty()) {
       for (String listId : allListIds) {
         response = trelloListService.archiveListById(listId);
-        assertStatusCode(response, 200);
+        // Verify the list is archived successfully
+        listValidationUtil.assertStatusCode(response, 200);
       }
     } else {
       logInfo("No lists to clean.");
@@ -202,16 +144,6 @@ public class BoardSetupTest extends BaseTest {
     if (boardId != null) {
       Response response = trelloListService.getAllListsOnBoard(boardId);
       return response.jsonPath().getList("id");
-    } else {
-      logInfo("Board ID is null, cannot fetch lists.");
-      return new ArrayList<>();
-    }
-  }
-
-  private List<String> getAllListByEntity(String boardId, String entityName) {
-    if (boardId != null) {
-      Response response = trelloListService.getAllListsOnBoard(boardId);
-      return response.jsonPath().getList(entityName);
     } else {
       logInfo("Board ID is null, cannot fetch lists.");
       return new ArrayList<>();
