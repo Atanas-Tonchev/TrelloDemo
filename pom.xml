@@ -14,7 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+    <!-- testng -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
@@ -32,13 +32,6 @@
       <artifactId>testng</artifactId>
       <version>7.11.0</version>
       <scope>compile</scope>
-    </dependency>
-    <!-- RestAssured -->
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
-      <version>4.3.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.rest-assured</groupId>
