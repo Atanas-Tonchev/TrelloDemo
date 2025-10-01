@@ -63,7 +63,7 @@ public class BoardSetupTest extends BaseTest {
   public void testCreateBoard() {
     try {
       // Create a new board
-      logInfo("Starting create board test...");
+      logInfo("Starting test: testCreateBoard");
       response = boardService.createBoard(trelloBoardObject.getName());
       // Verify board creation
       boardValidationUtil.assertStatusCode(response, 200);
@@ -88,7 +88,7 @@ public class BoardSetupTest extends BaseTest {
 
   @Test(priority = 2, dependsOnMethods = "testCreateBoard")
   public void testCreateListsOnBoard() {
-    logInfo("Starting create lists on board test...");
+    logInfo("Starting test: testCreateListsOnBoard");
     String boardId = trelloBoardObject.getId();
     try {
       // Check if there are any lists exist on the board and clean them ,
@@ -156,12 +156,5 @@ public class BoardSetupTest extends BaseTest {
   public void resetTestSuccessFlag() {
     isTestSuccess = false; // Always reset for the next test
   }
-  /*@AfterClass
-  public void saveBoardId() {
-    if (boardId != null) {
-      LogUtil.getInstance().logInfo("Saving created board ID to configuration: " + boardId);
-      objConfig.setBoardId(boardId);
-    }
-  }*/
 
 }
