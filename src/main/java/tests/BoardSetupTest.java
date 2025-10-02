@@ -67,7 +67,7 @@ public class BoardSetupTest extends BaseTest {
       response = boardService.createBoard(trelloBoardModel.getName());
 
       // Verify board creation
-      boardValidationUtil.assertPostSuccess(response);
+      boardValidationUtil.assertSuccessResponseArray(response);
 
       // Extract and set the board ID, only after successful creation
       trelloBoardModel.setId(boardService.getBoardIdByCreationResponse(response));
@@ -105,7 +105,7 @@ public class BoardSetupTest extends BaseTest {
         response = trelloListService.createList(boardId, listName);
 
         // Verify list creation
-        listValidationUtil.assertPostSuccess(response);
+        listValidationUtil.assertSuccessResponseArray(response);
 
         // Extract list ID from the response, only after successful creation
         String listId = trelloListService.getListIdByName(listName,boardId);

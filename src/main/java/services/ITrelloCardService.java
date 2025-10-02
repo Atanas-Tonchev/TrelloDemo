@@ -8,9 +8,13 @@ public interface ITrelloCardService {
     return null;
   }
 
-  Response createCardComment(String cardId, String comment);
+  default Response createCardComment(String cardId, String comment) {
+    return null;
+  }
 
-  Response moveCardToList(String cardId, String listId);
+  default Response moveCardToList(String cardId, String listId) {
+    return null;
+  }
 
   default String getCardIdByCreationResponse(Response createCardResponse) {
     return null;

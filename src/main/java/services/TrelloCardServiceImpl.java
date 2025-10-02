@@ -39,4 +39,5 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
   public Response getCardActionsById(String cardId) {
     return client.getCardActionsById(cardId);
   }
+
 }

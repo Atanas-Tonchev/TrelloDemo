@@ -61,4 +61,6 @@ public class TrelloCardClient extends AbstractTrelloClient{
         .when()
         .get("/cards/" + id + "/actions");
   }
+
+
 }

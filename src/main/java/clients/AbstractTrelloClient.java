@@ -14,7 +14,4 @@ public abstract class AbstractTrelloClient {
     this.baseUrl = RestAssured.baseURI = baseUrl;
   }
 
-  protected String buildAuthParams() {
-    return "key=" + apiKey + "&token=" + authToken;
-  }
 }

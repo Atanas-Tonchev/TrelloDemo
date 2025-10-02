@@ -3,20 +3,19 @@ package util;
 import io.restassured.response.Response;
 import models.TrelloCardModel;
 import services.TrelloCardServiceImpl;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 public class CardValidationUtil extends ValidationUtil {
 
   @Override
-  public void assertPostSuccess(Response response) {
-    super.assertPostSuccess(response);
+  public void assertSuccessResponseArray(Response response) {
+    super.assertSuccessResponseArray(response);
   }
 
   @Override
-  public void assertGetSuccess(Response response) {
-    super.assertGetSuccess(response);
+  public void assertSuccessResponseMap(Response response) {
+    super.assertSuccessResponseMap(response);
   }
 
   @Override
@@ -60,4 +59,5 @@ public class CardValidationUtil extends ValidationUtil {
 
     LogUtil.logInfo("Comment fields assertion completed successfully.");
   }
+
 }

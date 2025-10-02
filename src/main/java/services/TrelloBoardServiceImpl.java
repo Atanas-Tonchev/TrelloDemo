@@ -32,13 +32,4 @@ public class TrelloBoardServiceImpl implements ITrelloBoardService {
     return client.getBoardIdByCreationResponse(creationResponse);
   }
 
-  @Override
-  public Response getBoardById(String boardId) {
-    return client.getBoard(boardId);
-  }
-
-  @Override
-  public void deleteBoardById(String boardId) {
-    client.deleteBoard(boardId).then().statusCode(200);
-  }
 }

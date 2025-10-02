@@ -3,6 +3,7 @@ package tests;
 import io.restassured.response.Response;
 import models.TrelloBoardModel;
 import models.TrelloCardModel;
+import models.TrelloListModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -23,6 +24,9 @@ import java.util.Set;
 import static configs.BaseTest.objConfig;
 import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.CARD_NAME;
+import static constants.AutomationConstants.CHECKLIST_PREPARATION_STEP;
+import static constants.AutomationConstants.CHECKLIST_REVIEW_STEPS;
+import static constants.AutomationConstants.DEFAULT_CHECKLIST_NAMES;
 import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
 import static constants.AutomationConstants.LIST_NAME_TODO;
 import static org.testng.Assert.assertNotNull;
@@ -39,6 +43,7 @@ public class CardWorkflowTest {
   private BoardValidationUtil boardValidationUtil;
   private TrelloBoardModel trelloBoardModel;
   private TrelloCardModel trelloCardModel;
+  private TrelloListModel trelloListModel;
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
 
@@ -83,7 +88,7 @@ public class CardWorkflowTest {
       trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
 
       // Validate response status code and body
-      cardValidationUtil.assertPostSuccess(response);
+      cardValidationUtil.assertSuccessResponseArray(response);
       cardValidationUtil.assertResponseBody(response, CARD_NAME);
 
       // Mark test as successful
@@ -118,7 +123,7 @@ public class CardWorkflowTest {
         Response moveResponse = cardService.moveCardToList(trelloCardModel.getId(), targetListId);
 
         // Validate move response
-        cardValidationUtil.assertPostSuccess(moveResponse);
+        cardValidationUtil.assertSuccessResponseArray(moveResponse);
 
         // Verify the card is in the expected list by fetching it and validating its 'idList'
         cardValidationUtil.validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
@@ -141,15 +146,15 @@ public class CardWorkflowTest {
   @Test(priority = 3, dependsOnMethods = {"testCreateTitledCard","testMoveCard"})
   public void testAddCommentToCard() {
     logInfo("Starting test: testAddCommentToCard");
-    String commentText = "This is a test comment.";
+    String commentText = trelloCardModel.getCommentToAdd();
     try {
       // Add a comment to the card
       Response commentResponse = cardService.createCardComment(trelloCardModel.getId(), commentText);
-      cardValidationUtil.assertPostSuccess(commentResponse);
+      cardValidationUtil.assertSuccessResponseArray(commentResponse);
 
       // Retrieve the list of actions for the card
       Response actionsResponse = cardService.getCardActionsById(trelloCardModel.getId());
-      cardValidationUtil.assertGetSuccess(actionsResponse);
+      cardValidationUtil.assertSuccessResponseMap(actionsResponse);
 
       // Validate the comment fields in the actions response
       cardValidationUtil.validateCommentFields(commentResponse, commentText);

@@ -19,26 +19,8 @@ public class TrelloBoardClient extends AbstractTrelloClient{
         .post("/boards/");
   }
 
-  public Response getBoard(String boardId) {
-    return RestAssured
-        .given()
-        .queryParam("key", apiKey)
-        .queryParam("token", authToken)
-        .when()
-        .get("/boards/" + boardId);
-  }
-
   public String getBoardIdByCreationResponse(Response creationResponse) {
     return creationResponse.jsonPath().getString("id");
-  }
-
-  public Response deleteBoard(String boardId) {
-    return RestAssured
-        .given()
-        .queryParam("key", apiKey)
-        .queryParam("token", authToken)
-        .when()
-        .delete("/boards/" + boardId);
   }
 
   public String getBoardIdByName(String boardName) {

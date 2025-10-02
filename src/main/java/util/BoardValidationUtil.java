@@ -7,8 +7,8 @@ import static org.testng.Assert.assertNotNull;
 public final class BoardValidationUtil extends ValidationUtil {
 
   @Override
-  public void assertPostSuccess(Response response) {
-    super.assertPostSuccess(response);
+  public void assertSuccessResponseArray(Response response) {
+    super.assertSuccessResponseArray(response);
   }
 
   @Override
