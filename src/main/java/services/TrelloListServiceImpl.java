@@ -3,6 +3,8 @@ package services;
 import clients.TrelloListClient;
 import io.restassured.response.Response;
 
+import static util.LogUtil.logInfo;
+
 public class TrelloListServiceImpl implements ITrelloListService {
   private final TrelloListClient trelloListClient;
 
@@ -12,6 +14,7 @@ public class TrelloListServiceImpl implements ITrelloListService {
 
   @Override
   public Response createList(String boardId, String listName) {
+    logInfo("Creating list with name: " + listName + " on board ID: " + boardId);
     return trelloListClient.createList(boardId, listName);
   }
 
@@ -37,6 +40,7 @@ public class TrelloListServiceImpl implements ITrelloListService {
 
   @Override
   public Response archiveListById(String listId) {
+    logInfo("Archiving list with ID: " + listId);
     return trelloListClient.archiveList(listId);
   }
 

@@ -16,6 +16,7 @@ public class ListsValidationUtil extends ValidationUtil {
   @Override
   public void assertSuccessResponseArray(Response response) {
     super.assertSuccessResponseArray(response);
+    logInfo("Validation success.");
   }
 
   @Override
@@ -29,6 +30,7 @@ public class ListsValidationUtil extends ValidationUtil {
     assertNotNull(response.jsonPath().get("idBoard"), "Response JSON should contain 'idBoard'");
     assertNotNull(response.jsonPath().get("pos"), "Response JSON should contain 'pos'");
     assertNotNull(response.jsonPath().get("datasource"), "Response JSON should contain 'datasource'");
+    logInfo("List response body validation completed successfully.");
   }
 
   @Override

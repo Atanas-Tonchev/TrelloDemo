@@ -6,6 +6,8 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
 
+import static util.LogUtil.logInfo;
+
 public class TrelloCardServiceImpl implements ITrelloCardService {
 
   private final TrelloCardClient client;
@@ -16,16 +18,19 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
 
   @Override
   public Response createCard(String listId, String name) {
+    logInfo("Creating card with name: " + name + " in list ID: " + listId);
     return client.createCard(listId, name);
   }
 
   @Override
   public Response createCardComment(String cardId, String comment) {
+    logInfo("Adding comment to card ID: " + cardId);
     return client.createCardComment(cardId, comment);
   }
 
   @Override
   public Response moveCardToList(String cardId, String listId) {
+    logInfo("Moving card ID: " + cardId + " to list ID: " + listId);
     return client.moveCardToList(cardId, listId);
   }
 
@@ -41,6 +46,7 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
 
   @Override
   public Response getCardActionsById(String cardId) {
+    logInfo("Retrieving actions for card ID: " + cardId);
     return client.getCardActionsById(cardId);
   }
 

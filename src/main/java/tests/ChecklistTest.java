@@ -14,10 +14,10 @@ import services.TrelloCheckListServiceImpl;
 import services.TrelloListServiceImpl;
 import util.BoardValidationUtil;
 import util.CardValidationUtil;
+import util.CheckListsValidationUtil;
 import util.ListsValidationUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,6 +48,7 @@ public class ChecklistTest extends BaseTest {
   private TrelloBoardModel trelloBoardModel;
   private TrelloCardModel trelloCardModel;
   private TrelloCheckListModel trelloCheckListModel;
+  private CheckListsValidationUtil checkListValidationUtil;
   private boolean isTestSuccess;
 
   @BeforeClass
@@ -67,6 +68,7 @@ public class ChecklistTest extends BaseTest {
       trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       trelloCheckListModel = new TrelloCheckListModel();
       trelloCardModel = new TrelloCardModel();
+      checkListValidationUtil = new CheckListsValidationUtil();
       // Execute prerequisite operations
       executePrerequisites();
       isTestSuccess = false;
@@ -84,7 +86,7 @@ public class ChecklistTest extends BaseTest {
       for (String checkListName : DEFAULT_CHECKLIST_NAMES) {
         // Create checklist on the card
         Response checklistResponse = trelloCheckListService.createChecklistOnCard(trelloCardModel.getId(), checkListName);
-        cardValidationUtil.assertSuccessResponseArray(checklistResponse);
+        checkListValidationUtil.assertSuccessResponseArray(checklistResponse);
         String checkListId = checklistResponse.jsonPath().getString("id");
         assertNotNull(checkListId, "Checklist ID should not be null after creation");
 
@@ -95,7 +97,7 @@ public class ChecklistTest extends BaseTest {
         // Add items to the checklist
         for (String itemName : DEFAULT_CHECKLIST_ITEMS) {
           Response itemResponse = trelloCheckListService.addItemToChecklist(checkListId, itemName);
-          cardValidationUtil.assertSuccessResponseArray(itemResponse);
+          checkListValidationUtil.assertSuccessResponseArray(itemResponse);
         }
       }
 
@@ -115,8 +117,6 @@ public class ChecklistTest extends BaseTest {
   public void manegeChecklistsOnCard() {
     logInfo("Starting test: manageChecklistsOnCard");
     try {
-
-
       // Verify checklist items and mark them as complete based on checklist type
       for (String checkListName : DEFAULT_CHECKLIST_NAMES) {
         String checklistId = trelloCheckListModel.getCheckListIdByName(checkListName);
@@ -124,7 +124,7 @@ public class ChecklistTest extends BaseTest {
 
         // Fetch the checklist details
         Response getChecklistResponse = trelloCheckListService.getChecklistById(checklistId);
-        cardValidationUtil.assertSuccessResponseArray(getChecklistResponse);
+        checkListValidationUtil.assertSuccessResponseArray(getChecklistResponse);
 
         // Update checklist items based on checklist type
         List<Map<String, Object>> checkItems = getChecklistResponse.jsonPath().getList("checkItems");
@@ -132,13 +132,13 @@ public class ChecklistTest extends BaseTest {
           for (Map<String, Object> item : checkItems) {
             String itemId = (String) item.get("id");
             Response completeItemResponse = trelloCheckListService.updateChecklistItemState(trelloCardModel.getId(), checklistId, itemId, "true");
-            cardValidationUtil.assertSuccessResponseArray(completeItemResponse);
+            checkListValidationUtil.assertSuccessResponseArray(completeItemResponse);
           }
         } else if (CHECKLIST_REVIEW_STEPS.equals(checkListName)) {
           for (int i = 0; i < checkItems.size() - 1; i++) {
             String itemId = (String) checkItems.get(i).get("id");
             Response completeItemResponse = trelloCheckListService.updateChecklistItemState(trelloCardModel.getId(), checklistId, itemId, "true");
-            cardValidationUtil.assertSuccessResponseArray(completeItemResponse);
+            checkListValidationUtil.assertSuccessResponseArray(completeItemResponse);
           }
         }
 
@@ -171,7 +171,7 @@ public class ChecklistTest extends BaseTest {
 
       // Retrieve all checklists for the card
       Response allChecklistsResponse = trelloCheckListService.getAllChecklistsOnCard(trelloCardModel.getId());
-      cardValidationUtil.assertSuccessResponseMap(allChecklistsResponse);
+      checkListValidationUtil.assertSuccessResponseMap(allChecklistsResponse);
 
       List<Map<String, Object>> allChecklists = allChecklistsResponse.jsonPath().getList("$");
 
@@ -183,6 +183,7 @@ public class ChecklistTest extends BaseTest {
       if (!checklistNames.containsAll(DEFAULT_CHECKLIST_NAMES)) {
         throw new AssertionError("Both checklists not found on the card");
       }
+      logInfo("Both checklists are present on the card.");
 
       // Validate "Preparation Steps" items are all complete
       for (Map<String, Object> checklist : allChecklists) {
@@ -196,6 +197,7 @@ public class ChecklistTest extends BaseTest {
             }
           }
         }
+
         // Validate "Review Steps" has at least one incomplete item
         if (CHECKLIST_REVIEW_STEPS.equals(name)) {
           boolean hasIncomplete = checkItems.stream().anyMatch(item -> !"complete".equals(item.get("state")));
@@ -203,6 +205,7 @@ public class ChecklistTest extends BaseTest {
             throw new AssertionError("'" + CHECKLIST_REVIEW_STEPS + "' does not have any incomplete items");
           }
         }
+
         // Validate all checklist items are present
         List<String> actualItems = checkItems.stream().map(i -> String.valueOf(i.get("name"))).toList();
         for (String expectedItem : DEFAULT_CHECKLIST_ITEMS) {
@@ -210,7 +213,10 @@ public class ChecklistTest extends BaseTest {
             throw new AssertionError("Checklist item not found: " + expectedItem);
           }
         }
+        logInfo("All expected items are present in checklist: " + name);
       }
+      logInfo("All items in '" + CHECKLIST_PREPARATION_STEP + "' are complete.");
+      logInfo("'" + CHECKLIST_REVIEW_STEPS + "' has at least one incomplete item.");
 
       isTestSuccess = true;
     } catch (Exception e) {

@@ -1,0 +1,21 @@
+package util;
+
+import io.restassured.response.Response;
+
+import static util.LogUtil.logInfo;
+
+public class CheckListsValidationUtil extends ValidationUtil {
+
+  @Override
+  public void assertSuccessResponseArray(Response response) {
+    super.assertSuccessResponseArray(response);
+    logInfo("Validation success.");
+  }
+
+  @Override
+  public void assertSuccessResponseMap(Response response) {
+    super.assertSuccessResponseMap(response);
+    logInfo("Validation success.");
+  }
+
+}

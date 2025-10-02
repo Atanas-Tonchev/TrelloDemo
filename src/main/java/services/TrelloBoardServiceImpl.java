@@ -5,6 +5,8 @@ import clients.TrelloBoardClient;
 import io.restassured.response.Response;
 import models.TrelloBoardModel;
 
+import static util.LogUtil.logInfo;
+
 public class TrelloBoardServiceImpl implements ITrelloBoardService {
   private final TrelloBoardClient client;
 
@@ -24,11 +26,13 @@ public class TrelloBoardServiceImpl implements ITrelloBoardService {
 
   @Override
   public Response createBoard(String boardName) {
+    logInfo("Creating board with name: " + boardName);
     return client.createBoard(boardName);
   }
 
   @Override
   public String getBoardIdByCreationResponse(Response creationResponse) {
+    logInfo("Extracting board ID from creation response.");
     return client.getBoardIdByCreationResponse(creationResponse);
   }
 

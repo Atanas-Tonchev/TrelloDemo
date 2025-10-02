@@ -77,6 +77,7 @@ public class CardWorkflowTest {
       // Verify list ID is not null, only then proceed
       assertNotNull(listId, "'To Do' list ID should not be null");
 
+      // Create the card
       Response response = cardService.createCard(listId, CARD_NAME);
       // Initialize card model for further tests
       trelloCardModel = new TrelloCardModel(CARD_NAME, listId);

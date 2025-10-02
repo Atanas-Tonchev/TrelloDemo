@@ -61,9 +61,9 @@ public class BoardSetupTest extends BaseTest {
 
   @Test(priority = 1)
   public void testCreateBoard() {
+    logInfo("Starting test: testCreateBoard");
     try {
       // Create a new board
-      logInfo("Starting test: testCreateBoard");
       response = boardService.createBoard(trelloBoardModel.getName());
 
       // Verify board creation
