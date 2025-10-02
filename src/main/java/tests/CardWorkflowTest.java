@@ -3,7 +3,6 @@ package tests;
 import io.restassured.response.Response;
 import models.TrelloBoardModel;
 import models.TrelloCardModel;
-import models.TrelloListModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -24,9 +23,6 @@ import java.util.Set;
 import static configs.BaseTest.objConfig;
 import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.CARD_NAME;
-import static constants.AutomationConstants.CHECKLIST_PREPARATION_STEP;
-import static constants.AutomationConstants.CHECKLIST_REVIEW_STEPS;
-import static constants.AutomationConstants.DEFAULT_CHECKLIST_NAMES;
 import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
 import static constants.AutomationConstants.LIST_NAME_TODO;
 import static org.testng.Assert.assertNotNull;
@@ -43,7 +39,6 @@ public class CardWorkflowTest {
   private BoardValidationUtil boardValidationUtil;
   private TrelloBoardModel trelloBoardModel;
   private TrelloCardModel trelloCardModel;
-  private TrelloListModel trelloListModel;
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
 
@@ -60,9 +55,9 @@ public class CardWorkflowTest {
       listsValidationUtil = new ListsValidationUtil();
       cardValidationUtil = new CardValidationUtil();
       boardValidationUtil = new BoardValidationUtil();
-      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       // Execute prerequisite operations
       executePrerequisites();
+      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       isTestSuccess = false;
       logInfo("CardWorkflowTest setup completed.");
     } catch (Exception e) {
