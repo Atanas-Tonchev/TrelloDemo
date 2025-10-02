@@ -40,4 +40,10 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
     return client.getCardActionsById(cardId);
   }
 
+  @Override
+  public String getCardIdByName(String cardName, String boardId) {
+    Response response = client.getCardIdByName(cardName, boardId);
+    return client.getCardIdFromSearchResponse(response);
+  }
+
 }

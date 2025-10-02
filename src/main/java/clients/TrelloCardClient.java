@@ -24,6 +24,10 @@ public class TrelloCardClient extends AbstractTrelloClient{
     return response.jsonPath().getString("id");
   }
 
+  public String getCardIdFromSearchResponse(Response response) {
+    return response.jsonPath().getString("cards[0].id");
+  }
+
   public Response moveCardToList(String cardId, String listId) {
     return RestAssured
         .given()
@@ -62,5 +66,16 @@ public class TrelloCardClient extends AbstractTrelloClient{
         .get("/cards/" + id + "/actions");
   }
 
+  public Response getCardIdByName(String cardName, String boardId) {
+    return RestAssured
+        .given()
+        .queryParam("modelTypes", "cards")
+        .queryParam("query", "name:\"" + cardName + "\"")
+        .queryParam("idBoards", boardId)
+        .queryParam("key", apiKey)
+        .queryParam("token", authToken)
+        .when()
+        .get("/search");
+  }
 
 }

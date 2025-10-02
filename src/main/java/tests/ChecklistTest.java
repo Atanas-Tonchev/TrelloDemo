@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import models.TrelloBoardModel;
 import models.TrelloCardModel;
 import models.TrelloCheckListModel;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import services.TrelloBoardServiceImpl;
@@ -65,6 +66,8 @@ public class ChecklistTest extends BaseTest {
       boardValidationUtil = new BoardValidationUtil();
       trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       trelloCheckListModel = new TrelloCheckListModel();
+      trelloCardModel = new TrelloCardModel();
+      // Execute prerequisite operations
       executePrerequisites();
       isTestSuccess = false;
       logInfo("ChecklistTest setup completed.");
@@ -221,7 +224,7 @@ public class ChecklistTest extends BaseTest {
     }
   }
 
-  // Helper methods (copy from CardWorkflowTest as needed)
+  // Region Helper Methods
   private void executePrerequisites() {
     logInfo("Executing prerequisite operations.");
     try {
@@ -232,8 +235,16 @@ public class ChecklistTest extends BaseTest {
         boardValidationUtil.assertIdNotNull(boardId);
       }
       Map<String, String> mapOfLists = manageBoardLists(boardId);
+      // Check if card exists and create if not
+      String existingCardId = cardService.getCardIdByName(CARD_NAME, boardId);
+      if (existingCardId != null) {
+        logInfo("Card already exists with ID: " + existingCardId);
+        trelloCardModel.setId(existingCardId);
+        return;
+      }
 
       // Create a card for checklist tests
+      logInfo("Creating a new card for checklist tests.");
       String listId = mapOfLists.get(LIST_NAME_TODO);
       assertNotNull(listId, "'To Do' list ID should not be null");
       Response response = cardService.createCard(listId, CARD_NAME);
@@ -297,6 +308,13 @@ public class ChecklistTest extends BaseTest {
       logInfo("Board ID is null, cannot fetch lists.");
       return new ArrayList<>();
     }
+  }
+
+  // End Region
+
+  @AfterMethod(alwaysRun = true)
+  public void resetTestSuccessFlag() {
+    isTestSuccess = false; // Always reset for the next test
   }
 
 }
