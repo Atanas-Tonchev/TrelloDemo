@@ -10,8 +10,13 @@ import static org.testng.Assert.assertNotNull;
 public class CardValidationUtil extends ValidationUtil {
 
   @Override
-  public void assertResponseSuccess(Response response) {
-    super.assertResponseSuccess(response);
+  public void assertPostSuccess(Response response) {
+    super.assertPostSuccess(response);
+  }
+
+  @Override
+  public void assertGetSuccess(Response response) {
+    super.assertGetSuccess(response);
   }
 
   @Override

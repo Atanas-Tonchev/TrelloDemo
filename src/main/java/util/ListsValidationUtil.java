@@ -14,8 +14,8 @@ import static util.LogUtil.logInfo;
 public class ListsValidationUtil extends ValidationUtil {
 
   @Override
-  public void assertResponseSuccess(Response response) {
-    super.assertResponseSuccess(response);
+  public void assertPostSuccess(Response response) {
+    super.assertPostSuccess(response);
   }
 
   @Override
