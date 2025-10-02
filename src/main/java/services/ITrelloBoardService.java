@@ -5,8 +5,20 @@ import io.restassured.response.Response;
 import models.TrelloBoardModel;
 
 public interface ITrelloBoardService {
-  Response createBoard(String boardName);
-  String createBoardAndReturnId(TrelloBoardModel trelloBoardModel);
-  String getBoardIdByCreationResponse(Response creationResponse);
-  String getBoardIdByName(String boardName);
+
+  default Response createBoard(String boardName) {
+    return null;
+  }
+
+  default String createBoardAndReturnId(TrelloBoardModel trelloBoardModel) {
+    return null;
+  }
+
+  default String getBoardIdByCreationResponse(Response creationResponse) {
+    return null;
+  }
+
+  default String getBoardIdByName(String boardName) {
+    return null;
+  }
 }
