@@ -10,7 +10,7 @@ import static org.testng.Assert.assertNotNull;
 public class CardValidationUtil extends ValidationUtil {
 
   @Override
-  public void assertJsonObject(io.restassured.response.Response response) {
+  public void assertJsonObject(Response response) {
     super.assertJsonObject(response);
   }
 
@@ -51,4 +51,17 @@ public class CardValidationUtil extends ValidationUtil {
     LogUtil.logInfo("Card with ID: " + trelloCardModel.getId() + " successfully moved to the list: \"" + expectedListName + "\"");
   }
 
+  public void validateCommentFields(Response response, String commentText) {
+    LogUtil.logInfo("Asserting comment fields...");
+    String actualText = response.jsonPath().getString("data.text");
+    assertEquals(actualText, commentText, "'data.text' does not match expected value");
+    LogUtil.logInfo("The comment text is present and matches the input.");
+
+    String actionType = response.jsonPath().getString("type");
+    assertNotNull(actionType, "Response JSON should contain 'type'");
+    assertEquals(actionType, "commentCard", "'type' should be 'commentCard'");
+    LogUtil.logInfo("The action type is commentCard.");
+
+    LogUtil.logInfo("Comment fields assertion completed successfully.");
+  }
 }

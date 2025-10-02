@@ -16,6 +16,11 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
   }
 
   @Override
+  public Response createCardComment(String cardId, String comment) {
+    return client.createCardComment(cardId, comment);
+  }
+
+  @Override
   public Response moveCardToList(String cardId, String listId) {
     return client.moveCardToList(cardId, listId);
   }
@@ -28,5 +33,10 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
   @Override
   public Response getCardById(String cardId) {
     return client.getCardById(cardId);
+  }
+
+  @Override
+  public Response getCardActionsById(String cardId) {
+    return client.getCardActionsById(cardId);
   }
 }

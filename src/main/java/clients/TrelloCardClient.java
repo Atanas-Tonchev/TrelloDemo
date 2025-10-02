@@ -42,4 +42,23 @@ public class TrelloCardClient extends AbstractTrelloClient{
         .when()
         .get("/cards/" + cardId);
   }
+
+  public Response createCardComment(String cardId, String comment) {
+    return RestAssured
+        .given()
+        .queryParam("key", apiKey)
+        .queryParam("token", authToken)
+        .queryParam("text", comment)
+        .when()
+        .post("/cards/" + cardId + "/actions/comments");
+  }
+
+  public Response getCardActionsById(String id) {
+    return RestAssured
+        .given()
+        .queryParam("key", apiKey)
+        .queryParam("token", authToken)
+        .when()
+        .get("/cards/" + id + "/actions");
+  }
 }

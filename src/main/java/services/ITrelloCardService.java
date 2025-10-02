@@ -4,11 +4,24 @@ import io.restassured.response.Response;
 
 public interface ITrelloCardService {
 
-  Response createCard(String listId, String name);
+  default Response createCard(String listId, String name) {
+    return null;
+  }
+
+  Response createCardComment(String cardId, String comment);
 
   Response moveCardToList(String cardId, String listId);
 
-  String getCardIdByCreationResponse(Response createCardResponse);
+  default String getCardIdByCreationResponse(Response createCardResponse) {
+    return null;
+  }
 
-  Response getCardById(String cardId);
+  default Response getCardById(String cardId) {
+    return null;
+  }
+
+  default Response getCardActionsById(String cardId) {
+    return null;
+  }
+
 }

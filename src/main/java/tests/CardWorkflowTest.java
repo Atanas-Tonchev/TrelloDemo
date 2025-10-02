@@ -138,6 +138,33 @@ public class CardWorkflowTest {
     }
   }
 
+  @Test(priority = 3, dependsOnMethods = {"testCreateTitledCard","testMoveCard"})
+  public void testAddCommentToCard() {
+    logInfo("Starting test: testAddCommentToCard");
+    String commentText = "This is a test comment.";
+    try {
+      // Add a comment to the card
+      Response commentResponse = cardService.createCardComment(trelloCardModel.getId(), commentText);
+      cardValidationUtil.assertStatusCode(commentResponse, 200);
+
+      // Retrieve the list of actions for the card
+      Response actionsResponse = cardService.getCardActionsById(trelloCardModel.getId());
+      cardValidationUtil.assertStatusCode(actionsResponse, 200);
+
+      // Validate the comment fields in the actions response
+      cardValidationUtil.validateCommentFields(commentResponse, commentText);
+      isTestSuccess = true;
+    } catch (Exception e) {
+      logException("Exception in testAddCommentToCard: " + e.getMessage(), e);
+    } finally {
+      if (!isTestSuccess) {
+        logInfo("Test FAILED");
+      } else {
+        logInfo("Test PASSED");
+      }
+    }
+  }
+
   // Region: Helper Methods
 
   private void executePrerequisites() {
