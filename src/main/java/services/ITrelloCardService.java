@@ -28,5 +28,7 @@ public interface ITrelloCardService {
     return null;
   }
 
-  String getCardIdByName(String cardName, String boardId);
+  default String getCardIdByName(String cardName, String boardId) {
+    return null;
+  }
 }
