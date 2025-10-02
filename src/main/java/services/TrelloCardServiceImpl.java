@@ -3,7 +3,11 @@ package services;
 import clients.TrelloCardClient;
 import io.restassured.response.Response;
 
+import java.util.List;
+import java.util.Map;
+
 public class TrelloCardServiceImpl implements ITrelloCardService {
+
   private final TrelloCardClient client;
 
   public TrelloCardServiceImpl(String apiKey, String authToken, String baseUrl) {
@@ -42,8 +46,15 @@ public class TrelloCardServiceImpl implements ITrelloCardService {
 
   @Override
   public String getCardIdByName(String cardName, String boardId) {
-    Response response = client.getCardIdByName(cardName, boardId);
-    return client.getCardIdFromSearchResponse(response);
+    Response response = client.getAllCardsOnBoard(boardId);
+    // Find the card with the matching name
+    List<Map<String, Object>> cards = response.jsonPath().getList("$");
+    for (Map<String, Object> card : cards) {
+      if (cardName.equals(card.get("name"))) {
+        return String.valueOf(card.get("id"));
+      }
+    }
+    return null; // Return null if no matching card is found
   }
 
 }

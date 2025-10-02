@@ -55,9 +55,9 @@ public class CardWorkflowTest {
       listsValidationUtil = new ListsValidationUtil();
       cardValidationUtil = new CardValidationUtil();
       boardValidationUtil = new BoardValidationUtil();
+      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       // Execute prerequisite operations
       executePrerequisites();
-      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       isTestSuccess = false;
       logInfo("CardWorkflowTest setup completed.");
     } catch (Exception e) {
