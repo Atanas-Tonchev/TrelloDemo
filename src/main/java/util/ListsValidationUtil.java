@@ -14,18 +14,18 @@ import static util.LogUtil.logInfo;
 public class ListsValidationUtil extends ValidationUtil {
 
   @Override
-  public void assertJsonObject(io.restassured.response.Response response) {
-    super.assertJsonObject(response);
+  public void assertResponseSuccess(Response response) {
+    super.assertResponseSuccess(response);
   }
 
   @Override
-  public void assertStatusCode(io.restassured.response.Response response, int expectedStatus) {
+  public void assertStatusCode(Response response, int expectedStatus) {
     super.assertStatusCode(response, expectedStatus);
   }
 
   @Override
-  public void assertCreationFields(io.restassured.response.Response response, String expectedName) {
-    super.assertCreationFields(response, expectedName);
+  public void assertResponseBody(Response response, String expectedName) {
+    super.assertResponseBody(response, expectedName);
     assertNotNull(response.jsonPath().get("idBoard"), "Response JSON should contain 'idBoard'");
     assertNotNull(response.jsonPath().get("pos"), "Response JSON should contain 'pos'");
     assertNotNull(response.jsonPath().get("datasource"), "Response JSON should contain 'datasource'");
@@ -34,15 +34,6 @@ public class ListsValidationUtil extends ValidationUtil {
   @Override
   public void assertIdNotNull(String id) {
     super.assertIdNotNull(id);
-  }
-
-  public void validateListResponseBody(Response response, String expectedName, String id) {
-    // Verify the response body is a valid JSON object
-    assertJsonObject(response);
-    // Verify the response body contains expected fields
-    assertCreationFields(response, expectedName);
-    // Verify the list ID is not null
-    assertIdNotNull(id);
   }
 
   public void validateAllLists(List<String> actualListsCreated, List<String> expectedListsCreated, String boardId, TrelloListServiceImpl trelloListService) {

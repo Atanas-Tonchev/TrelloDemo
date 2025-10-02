@@ -10,8 +10,8 @@ import static org.testng.Assert.assertNotNull;
 public class CardValidationUtil extends ValidationUtil {
 
   @Override
-  public void assertJsonObject(Response response) {
-    super.assertJsonObject(response);
+  public void assertResponseSuccess(Response response) {
+    super.assertResponseSuccess(response);
   }
 
   @Override
@@ -20,8 +20,8 @@ public class CardValidationUtil extends ValidationUtil {
   }
 
   @Override
-  public void assertCreationFields(Response response, String expectedName) {
-    super.assertCreationFields(response, expectedName);
+  public void assertResponseBody(Response response, String expectedName) {
+    super.assertResponseBody(response, expectedName);
     assertNotNull(response.jsonPath().get("idList"), "Response JSON should contain 'idList'");
     assertNotNull(response.jsonPath().get("url"), "Response JSON should contain 'url'");
     assertNotNull(response.jsonPath().get("shortUrl"), "Response JSON should contain 'shortUrl'");
@@ -31,15 +31,6 @@ public class CardValidationUtil extends ValidationUtil {
   @Override
   public void assertIdNotNull(String id) {
     super.assertIdNotNull(id);
-  }
-
-  public void validateCardCreation(Response response, String expectedName, String cardId) {
-    LogUtil.logInfo("Validating card creation...");
-    // Verify the response body is a valid JSON object
-    assertJsonObject(response);
-    // Verify the response body contains expected fields
-    assertCreationFields(response, expectedName);
-    LogUtil.logInfo("Validation completed successfully. Created card ID: " + cardId);
   }
 
   public void validateCardInListAfterMoving(TrelloCardServiceImpl cardService, TrelloCardModel trelloCardModel, String expectedListId, String expectedListName) {

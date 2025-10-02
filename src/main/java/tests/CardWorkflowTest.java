@@ -83,8 +83,8 @@ public class CardWorkflowTest {
       trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
 
       // Validate response status code and body
-      cardValidationUtil.assertStatusCode(response, 200);
-      cardValidationUtil.validateCardCreation(response, CARD_NAME, listId);
+      cardValidationUtil.assertResponseSuccess(response);
+      cardValidationUtil.assertResponseBody(response, CARD_NAME);
 
       // Mark test as successful
       isTestSuccess = true;
@@ -118,7 +118,7 @@ public class CardWorkflowTest {
         Response moveResponse = cardService.moveCardToList(trelloCardModel.getId(), targetListId);
 
         // Validate move response
-        cardValidationUtil.assertStatusCode(moveResponse, 200);
+        cardValidationUtil.assertResponseSuccess(moveResponse);
 
         // Verify the card is in the expected list by fetching it and validating its 'idList'
         cardValidationUtil.validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
@@ -145,11 +145,11 @@ public class CardWorkflowTest {
     try {
       // Add a comment to the card
       Response commentResponse = cardService.createCardComment(trelloCardModel.getId(), commentText);
-      cardValidationUtil.assertStatusCode(commentResponse, 200);
+      cardValidationUtil.assertResponseSuccess(commentResponse);
 
       // Retrieve the list of actions for the card
       Response actionsResponse = cardService.getCardActionsById(trelloCardModel.getId());
-      cardValidationUtil.assertStatusCode(actionsResponse, 200);
+      cardValidationUtil.assertResponseSuccess(actionsResponse);
 
       // Validate the comment fields in the actions response
       cardValidationUtil.validateCommentFields(commentResponse, commentText);
