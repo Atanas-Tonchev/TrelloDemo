@@ -1,5 +1,6 @@
 package tests;
 
+import configs.BaseTest;
 import io.restassured.response.Response;
 import models.TrelloBoardModel;
 import models.TrelloCardModel;
@@ -9,9 +10,9 @@ import org.testng.annotations.Test;
 import services.TrelloBoardServiceImpl;
 import services.TrelloCardServiceImpl;
 import services.TrelloListServiceImpl;
-import util.BoardValidation;
-import util.CardValidation;
-import util.ListsValidation;
+import utils.BoardValidation;
+import utils.CardValidation;
+import utils.ListsValidation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,16 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static configs.BaseTest.objConfig;
 import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.CARD_NAME;
 import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
 import static constants.AutomationConstants.LIST_NAME_TODO;
+import static constants.AutomationConstants.TRELLO_API_TESTING;
 import static org.testng.Assert.assertNotNull;
-import static util.LogUtil.logException;
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logException;
+import static utils.LogUtil.logInfo;
 
-public class CardWorkflowTest {
+public class CardWorkflowTest extends BaseTest {
 
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
@@ -66,7 +67,7 @@ public class CardWorkflowTest {
   }
 
 
-  @Test(priority = 1)
+  @Test(groups = {TRELLO_API_TESTING}, priority = 1)
 
   public void testCreateTitledCard() {
     logInfo("Starting test: testCreateTitledCard");
@@ -101,7 +102,9 @@ public class CardWorkflowTest {
   }
 
 
-  @Test(priority = 2, dependsOnMethods = "testCreateTitledCard")
+  @Test(groups = {TRELLO_API_TESTING},
+      priority = 2,
+      dependsOnMethods = "testCreateTitledCard")
   public void testMoveCard() {
     logInfo("Starting test: testMoveCard");
     try {
@@ -139,7 +142,9 @@ public class CardWorkflowTest {
     }
   }
 
-  @Test(priority = 3, dependsOnMethods = {"testCreateTitledCard","testMoveCard"})
+  @Test(groups = {TRELLO_API_TESTING},
+      priority = 3,
+      dependsOnMethods = {"testCreateTitledCard", "testMoveCard"})
   public void testAddCommentToCard() {
     logInfo("Starting test: testAddCommentToCard");
     String commentText = trelloCardModel.getCommentToAdd();

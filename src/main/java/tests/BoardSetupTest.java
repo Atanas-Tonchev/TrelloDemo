@@ -2,20 +2,21 @@ package tests;
 
 import configs.BaseTest;
 import io.restassured.response.Response;
-import models.TrelloBoardModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
-import static util.LogUtil.logException;
-import static util.LogUtil.logInfo;
+import static constants.AutomationConstants.TRELLO_API_TESTING;
+import static utils.LogUtil.logException;
+import static utils.LogUtil.logInfo;
 
 import services.TrelloBoardServiceImpl;
 import services.TrelloListServiceImpl;
-import util.BoardValidation;
-import util.ListsValidation;
+import utils.ApiListener;
+import utils.TrelloTestContext;
+import utils.TrelloTestResult;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -24,26 +25,21 @@ import java.util.List;
 /**
  * Test class to set up and verify Trello board operations.
  */
-
+@Listeners({ApiListener.class})
 public class BoardSetupTest extends BaseTest {
 
-  private TrelloBoardModel trelloBoardModel;
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
-  private BoardValidation boardValidation;
-  private ListsValidation listValidationUtil;
   private LinkedList<String> listNames;
   private boolean isTestSuccess;
   private Response response;
+  private TrelloTestContext trelloTestContext;
 
   @BeforeClass(alwaysRun = true)
   public void setUp() {
     logInfo("Setting up BoardSetupTest...");
     try {
-      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
-      trelloBoardModel.setId(null);
-      boardValidation = new BoardValidation();
-      listValidationUtil = new ListsValidation();
+      trelloTestContext = TrelloTestContext.getInstance();
       isTestSuccess = false;
       String apiKey = objConfig.getApiKey();
       String authToken = objConfig.getAuthToken();
@@ -59,21 +55,24 @@ public class BoardSetupTest extends BaseTest {
   }
 
 
-  @Test(priority = 1)
+  @Test(groups = {TRELLO_API_TESTING}, priority = 1)
   public void testCreateBoard() {
     logInfo("Starting test: testCreateBoard");
     try {
       // Create a new board
-      response = boardService.createBoard(trelloBoardModel.getName());
+      String boardName = trelloTestContext.getTrelloBoardModel().getName();
+      response = boardService.createBoard(boardName);
 
       // Verify board creation
-      boardValidation.assertSuccessResponseArray(response);
+      trelloTestContext.getBoardValidation().assertSuccessResponseArray(response);
 
       // Extract and set the board ID, only after successful creation
-      trelloBoardModel.setId(boardService.getBoardIdByCreationResponse(response));
+      String boardId = boardService.getBoardIdByName(boardName);
+      trelloTestContext.getBoardValidation().assertIdNotNull(boardId);
+      trelloTestContext.getTrelloBoardModel().setId(boardId);
 
       // Validate response body
-      boardValidation.assertResponseBody(response, trelloBoardModel.getName());
+      trelloTestContext.getBoardValidation().assertResponseBody(response, boardName);
 
       // mark test as success
       isTestSuccess = true;
@@ -82,18 +81,20 @@ public class BoardSetupTest extends BaseTest {
       throw e;
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateBoard","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateBoard","PASSED");
       }
     }
 
   }
 
-  @Test(priority = 2, dependsOnMethods = "testCreateBoard")
+  @Test(groups = {TRELLO_API_TESTING},
+      priority = 2,
+      dependsOnMethods = "testCreateBoard")
   public void testCreateListsOnBoard() {
     logInfo("Starting test: testCreateListsOnBoard");
-    String boardId = trelloBoardModel.getId();
+    String boardId = trelloTestContext.getTrelloBoardModel().getId();
     try {
       // Check if there are any lists exist on the board and clean them ,
       // because by default Trello creates 3 lists on new board witch are not the same as our default lists
@@ -105,18 +106,18 @@ public class BoardSetupTest extends BaseTest {
         response = trelloListService.createList(boardId, listName);
 
         // Verify list creation
-        listValidationUtil.assertSuccessResponseArray(response);
+        trelloTestContext.getListValidation().assertSuccessResponseArray(response);
 
         // Extract list ID from the response, only after successful creation
         String listId = trelloListService.getListIdByName(listName,boardId);
 
         // Validate response body
-        listValidationUtil.assertResponseBody(response, listName);
+        trelloTestContext.getListValidation().assertResponseBody(response, listName);
         createdListIds.add(listId);
       }
 
       // Validate all created lists belong to the correct board
-      listValidationUtil.validateAllLists(createdListIds, listNames, boardId, trelloListService);
+      trelloTestContext.getListValidation().validateAllLists(createdListIds, listNames, boardId, trelloListService);
 
       // mark test as success
       isTestSuccess = true;
@@ -125,9 +126,9 @@ public class BoardSetupTest extends BaseTest {
       throw e;
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateListsOnBoard","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateListsOnBoard","PASSED");
       }
     }
   }
@@ -142,7 +143,7 @@ public class BoardSetupTest extends BaseTest {
       for (String listId : allListIds) {
         response = trelloListService.archiveListById(listId);
         // Verify the list is archived successfully
-        listValidationUtil.assertStatusCode(response, 200);
+        trelloTestContext.getListValidation().assertStatusCode(response, 200);
       }
     } else {
       logInfo("No lists to clean.");

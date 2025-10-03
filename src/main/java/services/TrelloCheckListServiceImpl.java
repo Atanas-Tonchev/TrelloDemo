@@ -3,7 +3,7 @@ package services;
 import clients.TrelloCheckListClient;
 import io.restassured.response.Response;
 
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logInfo;
 
 public class TrelloCheckListServiceImpl implements ITrelloCheckListService {
   private final TrelloCheckListClient client;

@@ -1,10 +1,10 @@
 package configs;
 
-import util.CommonUtil;
+import utils.CommonUtil;
 
 import java.util.Properties;
 
-import static util.LogUtil.logException;
+import static utils.LogUtil.logException;
 
 /**
  * Singleton class to read configuration from properties file.

@@ -5,7 +5,7 @@ import clients.TrelloBoardClient;
 import io.restassured.response.Response;
 import models.TrelloBoardModel;
 
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logInfo;
 
 public class TrelloBoardServiceImpl implements ITrelloBoardService {
   private final TrelloBoardClient client;

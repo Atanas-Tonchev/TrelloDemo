@@ -12,10 +12,10 @@ import services.TrelloBoardServiceImpl;
 import services.TrelloCardServiceImpl;
 import services.TrelloCheckListServiceImpl;
 import services.TrelloListServiceImpl;
-import util.BoardValidation;
-import util.CardValidation;
-import util.CheckListsValidation;
-import util.ListsValidation;
+import utils.BoardValidation;
+import utils.CardValidation;
+import utils.CheckListsValidation;
+import utils.ListsValidation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,9 +32,10 @@ import static constants.AutomationConstants.DEFAULT_CHECKLIST_ITEMS;
 import static constants.AutomationConstants.DEFAULT_CHECKLIST_NAMES;
 import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
 import static constants.AutomationConstants.LIST_NAME_TODO;
+import static constants.AutomationConstants.TRELLO_API_TESTING;
 import static org.testng.Assert.assertNotNull;
-import static util.LogUtil.logException;
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logException;
+import static utils.LogUtil.logInfo;
 
 public class ChecklistTest extends BaseTest {
 
@@ -78,7 +79,7 @@ public class ChecklistTest extends BaseTest {
     }
   }
 
-  @Test(priority = 1)
+  @Test(groups = {TRELLO_API_TESTING}, priority = 1)
   public void addChecklistWithItemsToCard() {
     logInfo("Starting test: addChecklistWithItemsToCard");
     try {
@@ -113,7 +114,9 @@ public class ChecklistTest extends BaseTest {
     }
   }
 
-  @Test(priority = 2, dependsOnMethods = "addChecklistWithItemsToCard")
+  @Test(groups = {TRELLO_API_TESTING},
+      priority = 2,
+      dependsOnMethods = "addChecklistWithItemsToCard")
   public void manegeChecklistsOnCard() {
     logInfo("Starting test: manageChecklistsOnCard");
     try {
@@ -164,7 +167,9 @@ public class ChecklistTest extends BaseTest {
   }
 
 
-  @Test(priority = 3, dependsOnMethods = {"addChecklistWithItemsToCard","manegeChecklistsOnCard"})
+  @Test(groups = {TRELLO_API_TESTING},
+      priority = 3,
+      dependsOnMethods = {"addChecklistWithItemsToCard","manegeChecklistsOnCard"})
   public void retrieveAndValidateCheckListsWithItems() {
     logInfo("Starting test: retrieveAndValidateCheckListsWithItems");
     try {

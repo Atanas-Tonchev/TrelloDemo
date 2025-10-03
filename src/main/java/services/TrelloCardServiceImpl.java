@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
 
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logInfo;
 
 public class TrelloCardServiceImpl implements ITrelloCardService {
 

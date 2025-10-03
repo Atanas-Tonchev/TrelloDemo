@@ -1,4 +1,4 @@
-package util;
+package utils;
 
 import io.restassured.response.Response;
 import models.TrelloCardModel;
@@ -6,7 +6,7 @@ import services.TrelloCardServiceImpl;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logInfo;
 
 public class CardValidation extends ValidationUtil {
 

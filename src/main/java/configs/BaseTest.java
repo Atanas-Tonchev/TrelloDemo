@@ -1,6 +1,6 @@
 package configs;
 
-import static util.LogUtil.logException;
+import static utils.LogUtil.logException;
 
 /**
  * Base test class to initialize configuration.

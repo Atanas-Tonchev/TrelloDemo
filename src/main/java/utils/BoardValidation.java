@@ -1,9 +1,9 @@
-package util;
+package utils;
 
 import io.restassured.response.Response;
 
 import static org.testng.Assert.assertNotNull;
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logInfo;
 
 public final class BoardValidation extends ValidationUtil {
 

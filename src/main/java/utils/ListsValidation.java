@@ -1,4 +1,4 @@
-package util;
+package utils;
 
 import io.restassured.response.Response;
 import services.TrelloListServiceImpl;
@@ -9,7 +9,7 @@ import java.util.List;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertEqualsNoOrder;
 import static org.testng.Assert.assertNotNull;
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logInfo;
 
 public class ListsValidation extends ValidationUtil {
 

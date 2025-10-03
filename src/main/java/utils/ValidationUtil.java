@@ -1,9 +1,9 @@
-package util;
+package utils;
 
 import io.restassured.response.Response;
 
 import static org.testng.Assert.*;
-import static util.LogUtil.logException;
+import static utils.LogUtil.logException;
 
 public class ValidationUtil {
 

@@ -1,8 +1,8 @@
-package util;
+package utils;
 
 import io.restassured.response.Response;
 
-import static util.LogUtil.logInfo;
+import static utils.LogUtil.logInfo;
 
 public class CheckListsValidation extends ValidationUtil {
 
