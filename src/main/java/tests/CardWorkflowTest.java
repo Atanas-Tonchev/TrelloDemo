@@ -33,7 +33,6 @@ public class CardWorkflowTest extends BaseTest {
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
   private TrelloCardServiceImpl cardService;
-  private TrelloCardModel trelloCardModel;
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
 
@@ -72,8 +71,8 @@ public class CardWorkflowTest extends BaseTest {
       // Create the card
       Response response = cardService.createCard(listId, CARD_NAME);
       // Initialize card model for further tests
-      trelloCardModel = new TrelloCardModel(CARD_NAME, listId);
-      trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
+      trelloTestContext.setTrelloCardModel(new TrelloCardModel(CARD_NAME, listId));
+      trelloTestContext.getTrelloCardModel().setId(cardService.getCardIdByCreationResponse(response));
 
       // Validate response status code and body
       trelloTestContext.getCardValidation().assertSuccessResponseArray(response);
@@ -101,7 +100,7 @@ public class CardWorkflowTest extends BaseTest {
     try {
       // Move the card through all lists it hasn't been in yet
       Set<String> visitedLists = new HashSet<>();
-      visitedLists.add(trelloCardModel.getIdList()); // Start with the initial list
+      visitedLists.add(trelloTestContext.getTrelloCardModel().getIdList()); // Start with the initial list
 
       for (Map.Entry<String, String> entry : mapOfLists.entrySet()) {
         String targetListId = entry.getValue();
@@ -110,13 +109,13 @@ public class CardWorkflowTest extends BaseTest {
         if (visitedLists.contains(targetListId)) continue;
 
         // Move the card
-        Response moveResponse = cardService.moveCardToList(trelloCardModel.getId(), targetListId);
+        Response moveResponse = cardService.moveCardToList(trelloTestContext.getTrelloCardModel().getId(), targetListId);
 
         // Validate move response
         trelloTestContext.getCardValidation().assertSuccessResponseArray(moveResponse);
 
         // Verify the card is in the expected list by fetching it and validating its 'idList'
-        trelloTestContext.getCardValidation().validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
+        trelloTestContext.getCardValidation().validateCardInListAfterMoving(cardService, trelloTestContext.getTrelloCardModel(), targetListId, entry.getKey());
 
         // Mark this list as visited
         visitedLists.add(targetListId);
@@ -138,14 +137,14 @@ public class CardWorkflowTest extends BaseTest {
       dependsOnMethods = {"testCreateTitledCard", "testMoveCard"})
   public void testAddCommentToCard() {
     logInfo("Starting test: testAddCommentToCard");
-    String commentText = trelloCardModel.getCommentToAdd();
+    String commentText = trelloTestContext.getTrelloCardModel().getCommentToAdd();
     try {
       // Add a comment to the card
-      Response commentResponse = cardService.createCardComment(trelloCardModel.getId(), commentText);
+      Response commentResponse = cardService.createCardComment(trelloTestContext.getTrelloCardModel().getId(), commentText);
       trelloTestContext.getCardValidation().assertSuccessResponseArray(commentResponse);
 
       // Retrieve the list of actions for the card
-      Response actionsResponse = cardService.getCardActionsById(trelloCardModel.getId());
+      Response actionsResponse = cardService.getCardActionsById(trelloTestContext.getTrelloCardModel().getId());
       trelloTestContext.getCardValidation().assertSuccessResponseMap(actionsResponse);
 
       // Validate the comment fields in the actions response
@@ -173,7 +172,7 @@ public class CardWorkflowTest extends BaseTest {
       // Create board if not found
       if (boardId == null) {
         logInfo("Board not found, creating a new board.");
-        boardId = boardService.createBoardAndReturnId(trelloTestContext.getTrelloBoardModel());
+        boardId = boardService.createBoardAndReturnId(trelloTestContext.getTrelloBoardModel().getName());
         // Validate board creation
         trelloTestContext.getBoardValidation().assertIdNotNull(boardId);
       }

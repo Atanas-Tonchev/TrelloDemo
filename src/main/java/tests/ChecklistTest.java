@@ -2,24 +2,20 @@ package tests;
 
 import configs.BaseTest;
 import io.restassured.response.Response;
-import models.TrelloBoardModel;
 import models.TrelloCardModel;
-import models.TrelloCheckListModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import services.TrelloBoardServiceImpl;
 import services.TrelloCardServiceImpl;
 import services.TrelloCheckListServiceImpl;
 import services.TrelloListServiceImpl;
-import utils.BoardValidation;
-import utils.CardValidation;
-import utils.CheckListsValidation;
-import utils.ListsValidation;
+import utils.ApiListener;
 import utils.TrelloTestContext;
+import utils.TrelloTestResult;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,26 +26,19 @@ import static constants.AutomationConstants.CHECKLIST_PREPARATION_STEP;
 import static constants.AutomationConstants.CHECKLIST_REVIEW_STEPS;
 import static constants.AutomationConstants.DEFAULT_CHECKLIST_ITEMS;
 import static constants.AutomationConstants.DEFAULT_CHECKLIST_NAMES;
-import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
 import static constants.AutomationConstants.LIST_NAME_TODO;
 import static constants.AutomationConstants.TRELLO_API_TESTING;
 import static org.testng.Assert.assertNotNull;
 import static utils.LogUtil.logException;
 import static utils.LogUtil.logInfo;
 
+@Listeners({ApiListener.class})
 public class ChecklistTest extends BaseTest {
 
   private TrelloCheckListServiceImpl trelloCheckListService;
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
   private TrelloCardServiceImpl cardService;
-  private ListsValidation listsValidation;
-  private CardValidation cardValidation;
-  private BoardValidation boardValidation;
-  private TrelloBoardModel trelloBoardModel;
-  private TrelloCardModel trelloCardModel;
-  private TrelloCheckListModel trelloCheckListModel;
-  private CheckListsValidation checkListValidationUtil;
   private TrelloTestContext trelloTestContext;
   private boolean isTestSuccess;
 
@@ -65,13 +54,6 @@ public class ChecklistTest extends BaseTest {
       cardService = new TrelloCardServiceImpl(apiKey, authToken, baseUrl);
       trelloCheckListService = new TrelloCheckListServiceImpl(apiKey, authToken, baseUrl);
       trelloListService = new TrelloListServiceImpl(apiKey, authToken, baseUrl);
-      listsValidation = new ListsValidation();
-      cardValidation = new CardValidation();
-      boardValidation = new BoardValidation();
-      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
-      trelloCheckListModel = new TrelloCheckListModel();
-      trelloCardModel = new TrelloCardModel();
-      checkListValidationUtil = new CheckListsValidation();
       // Execute prerequisite operations
       executePrerequisites();
       isTestSuccess = false;
@@ -88,19 +70,19 @@ public class ChecklistTest extends BaseTest {
       // Add checklists to the card
       for (String checkListName : DEFAULT_CHECKLIST_NAMES) {
         // Create checklist on the card
-        Response checklistResponse = trelloCheckListService.createChecklistOnCard(trelloCardModel.getId(), checkListName);
-        checkListValidationUtil.assertSuccessResponseArray(checklistResponse);
+        Response checklistResponse = trelloCheckListService.createChecklistOnCard(trelloTestContext.getTrelloCardModel().getId(), checkListName);
+        trelloTestContext.getCheckListValidation().assertSuccessResponseArray(checklistResponse);
         String checkListId = checklistResponse.jsonPath().getString("id");
         assertNotNull(checkListId, "Checklist ID should not be null after creation");
 
         // Set checklist details in the model
-        trelloCheckListModel.setCheckListIds(checkListName, checkListId);
+        trelloTestContext.getTrelloCheckListModel().setCheckListIds(checkListName, checkListId);
         assertNotNull(checkListId, "Checklist ID should not be null");
 
         // Add items to the checklist
         for (String itemName : DEFAULT_CHECKLIST_ITEMS) {
           Response itemResponse = trelloCheckListService.addItemToChecklist(checkListId, itemName);
-          checkListValidationUtil.assertSuccessResponseArray(itemResponse);
+          trelloTestContext.getCheckListValidation().assertSuccessResponseArray(itemResponse);
         }
       }
 
@@ -109,9 +91,9 @@ public class ChecklistTest extends BaseTest {
       logException("Exception in addChecklistWithItemsToCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.addChecklistWithItemsToCard","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.addChecklistWithItemsToCard","PASSED");
       }
     }
   }
@@ -124,26 +106,26 @@ public class ChecklistTest extends BaseTest {
     try {
       // Verify checklist items and mark them as complete based on checklist type
       for (String checkListName : DEFAULT_CHECKLIST_NAMES) {
-        String checklistId = trelloCheckListModel.getCheckListIdByName(checkListName);
+        String checklistId = trelloTestContext.getTrelloCheckListModel().getCheckListIdByName(checkListName);
         assertNotNull(checklistId, "Checklist ID should not be null before adding items");
 
         // Fetch the checklist details
         Response getChecklistResponse = trelloCheckListService.getChecklistById(checklistId);
-        checkListValidationUtil.assertSuccessResponseArray(getChecklistResponse);
+        trelloTestContext.getCheckListValidation().assertSuccessResponseArray(getChecklistResponse);
 
         // Update checklist items based on checklist type
         List<Map<String, Object>> checkItems = getChecklistResponse.jsonPath().getList("checkItems");
         if (CHECKLIST_PREPARATION_STEP.equals(checkListName)) {
           for (Map<String, Object> item : checkItems) {
             String itemId = (String) item.get("id");
-            Response completeItemResponse = trelloCheckListService.updateChecklistItemState(trelloCardModel.getId(), checklistId, itemId, "true");
-            checkListValidationUtil.assertSuccessResponseArray(completeItemResponse);
+            Response completeItemResponse = trelloCheckListService.updateChecklistItemState(trelloTestContext.getTrelloCardModel().getId(), checklistId, itemId, "true");
+            trelloTestContext.getCheckListValidation().assertSuccessResponseArray(completeItemResponse);
           }
         } else if (CHECKLIST_REVIEW_STEPS.equals(checkListName)) {
           for (int i = 0; i < checkItems.size() - 1; i++) {
             String itemId = (String) checkItems.get(i).get("id");
-            Response completeItemResponse = trelloCheckListService.updateChecklistItemState(trelloCardModel.getId(), checklistId, itemId, "true");
-            checkListValidationUtil.assertSuccessResponseArray(completeItemResponse);
+            Response completeItemResponse = trelloCheckListService.updateChecklistItemState(trelloTestContext.getTrelloCardModel().getId(), checklistId, itemId, "true");
+            trelloTestContext.getCheckListValidation().assertSuccessResponseArray(completeItemResponse);
           }
         }
 
@@ -161,9 +143,9 @@ public class ChecklistTest extends BaseTest {
       logException("Exception in manageChecklistsOnCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.manageChecklistsOnCard","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.manageChecklistsOnCard","PASSED");
       }
     }
   }
@@ -177,8 +159,8 @@ public class ChecklistTest extends BaseTest {
     try {
 
       // Retrieve all checklists for the card
-      Response allChecklistsResponse = trelloCheckListService.getAllChecklistsOnCard(trelloCardModel.getId());
-      checkListValidationUtil.assertSuccessResponseMap(allChecklistsResponse);
+      Response allChecklistsResponse = trelloCheckListService.getAllChecklistsOnCard(trelloTestContext.getTrelloCardModel().getId());
+      trelloTestContext.getCheckListValidation().assertSuccessResponseMap(allChecklistsResponse);
 
       List<Map<String, Object>> allChecklists = allChecklistsResponse.jsonPath().getList("$");
 
@@ -230,9 +212,9 @@ public class ChecklistTest extends BaseTest {
       logException("Exception in retrieveAndValidateCheckListsWithItems: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.retrieveAndValidateCheckListsWithItems","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.retrieveAndValidateCheckListsWithItems","PASSED");
       }
     }
   }
@@ -245,8 +227,9 @@ public class ChecklistTest extends BaseTest {
       String boardId = boardService.getBoardIdByName(BOARD_NAME);
       if (boardId == null) {
         logInfo("Board not found, creating a new board.");
-        boardId = boardService.createBoardAndReturnId(trelloBoardModel);
-        boardValidation.assertIdNotNull(boardId);
+
+        boardId = boardService.createBoardAndReturnId(trelloTestContext.getTrelloBoardModel().getName());
+        trelloTestContext.getBoardValidation().assertIdNotNull(boardId);
       }
 
       // Managing board lists. Create missing lists and get map of list names to IDs
@@ -256,7 +239,7 @@ public class ChecklistTest extends BaseTest {
       String existingCardId = cardService.getCardIdByName(CARD_NAME, boardId);
       if (existingCardId != null) {
         logInfo("Card already exists with ID: " + existingCardId);
-        trelloCardModel.setId(existingCardId);
+        trelloTestContext.getTrelloCardModel().setId(existingCardId);
         return;
       }
 
@@ -265,10 +248,10 @@ public class ChecklistTest extends BaseTest {
       String listId = mapOfLists.get(LIST_NAME_TODO);
       assertNotNull(listId, "'To Do' list ID should not be null");
       Response response = cardService.createCard(listId, CARD_NAME);
-      trelloCardModel = new TrelloCardModel(CARD_NAME, listId);
-      trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
-      cardValidation.assertSuccessResponseArray(response);
-      cardValidation.assertResponseBody(response, CARD_NAME);
+      trelloTestContext.setTrelloCardModel(new TrelloCardModel(CARD_NAME, listId));
+      trelloTestContext.getTrelloCardModel().setId(cardService.getCardIdByCreationResponse(response));
+      trelloTestContext.getCardValidation().assertSuccessResponseArray(response);
+      trelloTestContext.getCardValidation().assertResponseBody(response, CARD_NAME);
     } catch (Exception e) {
       logException("Exception in executePrerequisites: " + e.getMessage(), e);
     }

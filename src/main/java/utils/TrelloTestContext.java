@@ -1,13 +1,19 @@
 package utils;
 
 import models.TrelloBoardModel;
+import models.TrelloCardModel;
+import models.TrelloCheckListModel;
 
 public class TrelloTestContext {
   private static volatile TrelloTestContext instance;
   private TrelloBoardModel trelloBoardModel;
   private BoardValidation boardValidation;
   private ListsValidation listValidation;
+  private TrelloCardModel trelloCardModel;
   private CardValidation cardValidation;
+  private TrelloCheckListModel trelloCheckListModel;
+  private CheckListsValidation checkListValidation;
+
 
   public static TrelloTestContext getInstance() {
     if (instance == null) {
@@ -50,5 +56,29 @@ public class TrelloTestContext {
 
   public void setCardValidation(CardValidation cardValidation) {
     this.cardValidation = cardValidation;
+  }
+
+  public TrelloCheckListModel getTrelloCheckListModel() {
+    return trelloCheckListModel;
+  }
+
+  public void setTrelloCheckListModel(TrelloCheckListModel trelloCheckListModel) {
+    this.trelloCheckListModel = trelloCheckListModel;
+  }
+
+  public CheckListsValidation getCheckListValidation() {
+    return checkListValidation;
+  }
+
+  public void setCheckListValidation(CheckListsValidation checkListValidation) {
+    this.checkListValidation = checkListValidation;
+  }
+
+  public TrelloCardModel getTrelloCardModel() {
+    return trelloCardModel;
+  }
+
+  public void setTrelloCardModel(TrelloCardModel trelloCardModel) {
+    this.trelloCardModel = trelloCardModel;
   }
 }

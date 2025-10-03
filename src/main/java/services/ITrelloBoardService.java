@@ -2,7 +2,6 @@
 package services;
 
 import io.restassured.response.Response;
-import models.TrelloBoardModel;
 
 public interface ITrelloBoardService {
 
@@ -10,11 +9,7 @@ public interface ITrelloBoardService {
     return null;
   }
 
-  default String createBoardAndReturnId(TrelloBoardModel trelloBoardModel) {
-    return null;
-  }
-
-  default String getBoardIdByCreationResponse(Response creationResponse) {
+  default String createBoardAndReturnId(String boardName) {
     return null;
   }
 

@@ -3,7 +3,6 @@ package services;
 
 import clients.TrelloBoardClient;
 import io.restassured.response.Response;
-import models.TrelloBoardModel;
 
 import static utils.LogUtil.logInfo;
 
@@ -20,20 +19,14 @@ public class TrelloBoardServiceImpl implements ITrelloBoardService {
   }
 
   @Override
-  public String createBoardAndReturnId(TrelloBoardModel trelloBoardModel) {
-    return client.createBoard(trelloBoardModel.getName()).jsonPath().getString("id");
+  public String createBoardAndReturnId(String boardName) {
+    return client.createBoard(boardName).jsonPath().getString("id");
   }
 
   @Override
   public Response createBoard(String boardName) {
     logInfo("Creating board with name: " + boardName);
     return client.createBoard(boardName);
-  }
-
-  @Override
-  public String getBoardIdByCreationResponse(Response creationResponse) {
-    logInfo("Extracting board ID from creation response.");
-    return client.getBoardIdByCreationResponse(creationResponse);
   }
 
 }

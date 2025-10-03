@@ -1,6 +1,8 @@
 package utils;
 
 import models.TrelloBoardModel;
+import models.TrelloCardModel;
+import models.TrelloCheckListModel;
 import org.testng.IClassListener;
 import org.testng.ISuiteListener;
 import org.testng.ITestClass;
@@ -9,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static constants.AutomationConstants.BOARD_NAME;
-import static utils.LogUtil.logException;
 import static utils.LogUtil.logInfo;
 
 public class ApiListener implements IClassListener, ISuiteListener {
@@ -37,16 +38,24 @@ public class ApiListener implements IClassListener, ISuiteListener {
     trelloTestContext.setBoardValidation(boardValidation);
     ListsValidation listValidation = new ListsValidation();
     trelloTestContext.setListValidation(listValidation);
+    CardValidation cardValidation = new CardValidation();
+    TrelloCardModel trelloCardModel = new TrelloCardModel();
     // Execute prerequisite operations according to the class
     if (className.equals("CardWorkflowTest")) {
       logInfo(">>>> Executing prerequisite: initialize Trello Card model and validations <<<<");
-      CardValidation cardValidation = new CardValidation();
       trelloTestContext.setCardValidation(cardValidation);
+      trelloTestContext.setTrelloCardModel(trelloCardModel);
 
 
-    } else if (className.equals("CardWorkflowTest")) {
+    } else if (className.equals("ChecklistTest")) {
       logInfo(">> Executing prerequisite: initialize Trello Card model and validations");
-
+      // Initialize Trello Card model and validation
+      trelloTestContext.setTrelloCardModel(trelloCardModel);
+      trelloTestContext.setCardValidation(cardValidation);
+      TrelloCheckListModel trelloCheckListModel = new TrelloCheckListModel();
+      trelloTestContext.setTrelloCheckListModel(trelloCheckListModel);
+      CheckListsValidation checkListValidation = new CheckListsValidation();
+      trelloTestContext.setCheckListValidation(checkListValidation);
     }
   }
 
