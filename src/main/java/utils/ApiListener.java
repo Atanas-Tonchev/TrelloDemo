@@ -43,25 +43,6 @@ public class ApiListener implements IClassListener, ISuiteListener {
       CardValidation cardValidation = new CardValidation();
       trelloTestContext.setCardValidation(cardValidation);
 
-      logInfo("Executing prerequisite operations.");
-      try {
-        // Search board by name, if not found create a new one with all expected lists
-        String boardId = boardService.getBoardIdByName(BOARD_NAME);
-
-        // Create board if not found
-        if (boardId == null) {
-          logInfo("Board not found, creating a new board.");
-          boardId = boardService.createBoardAndReturnId(trelloBoardModel);
-          // Validate board creation
-          boardValidation.assertIdNotNull(boardId);
-        }
-
-        mapOfLists = manageBoardLists(boardId);
-      } catch (Exception e) {
-        logException("Exception in executePrerequisites: " + e.getMessage(), e);
-      }
-
-
 
     } else if (className.equals("CardWorkflowTest")) {
       logInfo(">> Executing prerequisite: initialize Trello Card model and validations");
@@ -85,7 +66,7 @@ public class ApiListener implements IClassListener, ISuiteListener {
     } else {
       logInfo("No test results for " + className);
     }
-    logInfo("=== End of class:" + className + " ===");
+    logInfo("=== End of class: " + className + " ===");
   }
 
   private void executePrerequisites() {

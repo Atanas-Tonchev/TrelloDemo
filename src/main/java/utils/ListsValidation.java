@@ -4,8 +4,11 @@ import io.restassured.response.Response;
 import services.TrelloListServiceImpl;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertEqualsNoOrder;
 import static org.testng.Assert.assertNotNull;
@@ -51,6 +54,48 @@ public class ListsValidation extends ValidationUtil {
       assertEquals(idBoard, boardId, "List should belong to the correct board");
     }
     logInfo("All lists are created and belong to the newly created board.");
+  }
+
+  public Map<String, String> manageBoardLists(String boardId, TrelloListServiceImpl trelloListService) {
+    logInfo("Managing board lists.");
+    Map<String, String> mapOfLists = new LinkedHashMap<>();
+    List<String> actualList = getAllListByEntity(boardId, "name", trelloListService);
+
+    // Update existing lists or create new ones as necessary
+    if (!actualList.isEmpty()) {
+      logInfo("Existing lists found on the board, updating if necessary.");
+      // Update existing lists if names differ
+      for (String expectedName : DEFAULT_LIST_NAMES) {
+        if (!actualList.contains(expectedName)) {
+          actualList.stream()
+              .filter(actualName -> !DEFAULT_LIST_NAMES.contains(actualName))
+              .findFirst()
+              .ifPresent(actualName -> {
+                String actualId = trelloListService.getListIdByName(actualName, boardId);
+                assertIdNotNull(actualId);
+                Response response = trelloListService.updateListName(actualId, expectedName);
+                assertStatusCode(response, 200);
+                logInfo("Updated list from: " + actualName + " to: " + expectedName);
+              });
+        }
+      }
+    } else {
+      logInfo("No existing lists found, creating default lists.");
+      // Create new lists if none exist
+      DEFAULT_LIST_NAMES.forEach(listName -> {
+        Response response = trelloListService.createList(boardId, listName);
+        assertStatusCode(response, 200);
+      });
+    }
+
+    // Repopulate map with all lists and their IDs
+    getAllListByEntity(boardId, "id", trelloListService).forEach(listId -> {
+      Response response = trelloListService.getListById(listId);
+      assertStatusCode(response, 200);
+      String listName = response.jsonPath().getString("name");
+      mapOfLists.put(listName, listId);
+    });
+    return mapOfLists;
   }
 
   public List<String> getAllListByEntity(String boardId, String entityName, TrelloListServiceImpl trelloListService) {

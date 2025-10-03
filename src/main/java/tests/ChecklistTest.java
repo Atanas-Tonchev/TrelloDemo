@@ -18,7 +18,6 @@ import utils.CheckListsValidation;
 import utils.ListsValidation;
 import utils.TrelloTestContext;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -242,13 +241,17 @@ public class ChecklistTest extends BaseTest {
   private void executePrerequisites() {
     logInfo("Executing prerequisite operations.");
     try {
+      // Search board by name, if not found create a new one with all expected lists
       String boardId = boardService.getBoardIdByName(BOARD_NAME);
       if (boardId == null) {
         logInfo("Board not found, creating a new board.");
         boardId = boardService.createBoardAndReturnId(trelloBoardModel);
         boardValidation.assertIdNotNull(boardId);
       }
-      Map<String, String> mapOfLists = manageBoardLists(boardId);
+
+      // Managing board lists. Create missing lists and get map of list names to IDs
+      Map<String, String> mapOfLists = trelloTestContext.getListValidation().manageBoardLists(boardId, trelloListService);
+
       // Check if card exists and create if not
       String existingCardId = cardService.getCardIdByName(CARD_NAME, boardId);
       if (existingCardId != null) {
@@ -269,48 +272,6 @@ public class ChecklistTest extends BaseTest {
     } catch (Exception e) {
       logException("Exception in executePrerequisites: " + e.getMessage(), e);
     }
-  }
-
-  private Map<String, String> manageBoardLists(String boardId) {
-    logInfo("Managing board lists.");
-    Map<String, String> mapOfLists = new LinkedHashMap<>();
-    List<String> actualList = trelloTestContext.getListValidation().getAllListByEntity(boardId, "name", trelloListService);
-
-    // Update existing lists or create new ones as necessary
-    if (!actualList.isEmpty()) {
-      logInfo("Existing lists found on the board, updating if necessary.");
-      // Update existing lists if names differ
-      for (String expectedName : DEFAULT_LIST_NAMES) {
-        if (!actualList.contains(expectedName)) {
-          actualList.stream()
-              .filter(actualName -> !DEFAULT_LIST_NAMES.contains(actualName))
-              .findFirst()
-              .ifPresent(actualName -> {
-                String actualId = trelloListService.getListIdByName(actualName, boardId);
-                listsValidation.assertIdNotNull(actualId);
-                Response response = trelloListService.updateListName(actualId, expectedName);
-                listsValidation.assertStatusCode(response, 200);
-                logInfo("Updated list from: " + actualName + " to: " + expectedName);
-              });
-        }
-      }
-    } else {
-      logInfo("No existing lists found, creating default lists.");
-      // Create new lists if none exist
-      DEFAULT_LIST_NAMES.forEach(listName -> {
-        Response response = trelloListService.createList(boardId, listName);
-        listsValidation.assertStatusCode(response, 200);
-      });
-    }
-
-    // Repopulate map with all lists and their IDs
-    trelloTestContext.getListValidation().getAllListByEntity(boardId, "id", trelloListService).forEach(listId -> {
-      Response response = trelloListService.getListById(listId);
-      listsValidation.assertStatusCode(response, 200);
-      String listName = response.jsonPath().getString("name");
-      mapOfLists.put(listName, listId);
-    });
-    return mapOfLists;
   }
 
   // End Region

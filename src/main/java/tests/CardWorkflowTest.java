@@ -12,16 +12,14 @@ import services.TrelloCardServiceImpl;
 import services.TrelloListServiceImpl;
 import utils.ApiListener;
 import utils.TrelloTestContext;
+import utils.TrelloTestResult;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.CARD_NAME;
-import static constants.AutomationConstants.DEFAULT_LIST_NAMES;
 import static constants.AutomationConstants.LIST_NAME_TODO;
 import static constants.AutomationConstants.TRELLO_API_TESTING;
 import static org.testng.Assert.assertNotNull;
@@ -87,9 +85,9 @@ public class CardWorkflowTest extends BaseTest {
       logException("Exception in testCreateTitledCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testCreateTitledCard","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testCreateTitledCard","PASSED");
       }
     }
   }
@@ -128,9 +126,9 @@ public class CardWorkflowTest extends BaseTest {
       logException("Exception in testMoveCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testMoveCard","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testMoveCard","PASSED");
       }
     }
   }
@@ -157,9 +155,9 @@ public class CardWorkflowTest extends BaseTest {
       logException("Exception in testAddCommentToCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        logInfo("Test FAILED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testAddCommentToCard","FAILED");
       } else {
-        logInfo("Test PASSED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testAddCommentToCard","PASSED");
       }
     }
   }
@@ -180,55 +178,13 @@ public class CardWorkflowTest extends BaseTest {
         trelloTestContext.getBoardValidation().assertIdNotNull(boardId);
       }
 
-      mapOfLists = manageBoardLists(boardId);
+      // Managing board lists. Create missing lists and get map of list names to IDs
+      mapOfLists = trelloTestContext.getListValidation().manageBoardLists(boardId, trelloListService);
     } catch (Exception e) {
       logException("Exception in executePrerequisites: " + e.getMessage(), e);
     }
   }
 
-
-  private Map<String, String> manageBoardLists(String boardId) {
-    logInfo("Managing board lists.");
-    Map<String, String> mapOfLists = new LinkedHashMap<>();
-    List<String> actualList = trelloTestContext.getListValidation().getAllListByEntity(boardId, "name", trelloListService);
-
-    // Update existing lists or create new ones as necessary
-    if (!actualList.isEmpty()) {
-      logInfo("Existing lists found on the board, updating if necessary.");
-      // Update existing lists if names differ
-      for (String expectedName : DEFAULT_LIST_NAMES) {
-        if (!actualList.contains(expectedName)) {
-          actualList.stream()
-              .filter(actualName -> !DEFAULT_LIST_NAMES.contains(actualName))
-              .findFirst()
-              .ifPresent(actualName -> {
-                String actualId = trelloListService.getListIdByName(actualName, boardId);
-                trelloTestContext.getListValidation().assertIdNotNull(actualId);
-                Response response = trelloListService.updateListName(actualId, expectedName);
-                trelloTestContext.getListValidation().assertStatusCode(response, 200);
-                logInfo("Updated list from: " + actualName + " to: " + expectedName);
-              });
-        }
-      }
-    } else {
-      logInfo("No existing lists found, creating default lists.");
-      // Create new lists if none exist
-      DEFAULT_LIST_NAMES.forEach(listName -> {
-        Response response = trelloListService.createList(boardId, listName);
-        trelloTestContext.getListValidation().assertStatusCode(response, 200);
-      });
-    }
-
-    // Repopulate map with all lists and their IDs
-
-    trelloTestContext.getListValidation().getAllListByEntity(boardId, "id", trelloListService).forEach(listId -> {
-      Response response = trelloListService.getListById(listId);
-      trelloTestContext.getListValidation().assertStatusCode(response, 200);
-      String listName = response.jsonPath().getString("name");
-      mapOfLists.put(listName, listId);
-    });
-    return mapOfLists;
-  }
 
   // End Region
 
