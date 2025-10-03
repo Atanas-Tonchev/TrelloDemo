@@ -5,7 +5,6 @@ import io.restassured.response.Response;
 import models.TrelloCardModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import services.TrelloBoardServiceImpl;
@@ -38,7 +37,7 @@ public class CardWorkflowTest extends BaseTest {
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
 
-  @BeforeClass
+  @BeforeClass(alwaysRun = true)
   public void setUp() {
     try {
       logInfo("Setting up CardWorkflowTest...");
@@ -56,12 +55,6 @@ public class CardWorkflowTest extends BaseTest {
     } catch (Exception e) {
       logException("Exception in setUp: " + e.getMessage(), e);
     }
-  }
-
-  @BeforeMethod
-  public void beforeEachTest() {
-    // Refresh test context before each test
-    trelloTestContext = TrelloTestContext.getInstance();
   }
 
 

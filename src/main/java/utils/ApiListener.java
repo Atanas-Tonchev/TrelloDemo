@@ -41,13 +41,13 @@ public class ApiListener implements IClassListener, ISuiteListener {
     CardValidation cardValidation = new CardValidation();
     TrelloCardModel trelloCardModel = new TrelloCardModel();
     // Execute prerequisite operations according to the class
-    if (className.equals("CardWorkflowTest")) {
+    if (className.equalsIgnoreCase("CardWorkflowTest")) {
       logInfo(">>>> Executing prerequisite: initialize Trello Card model and validations <<<<");
       trelloTestContext.setCardValidation(cardValidation);
       trelloTestContext.setTrelloCardModel(trelloCardModel);
 
 
-    } else if (className.equals("ChecklistTest")) {
+    } else if (className.equalsIgnoreCase("ChecklistTest")) {
       logInfo(">> Executing prerequisite: initialize Trello Card model and validations");
       // Initialize Trello Card model and validation
       trelloTestContext.setTrelloCardModel(trelloCardModel);

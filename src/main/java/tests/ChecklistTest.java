@@ -42,7 +42,7 @@ public class ChecklistTest extends BaseTest {
   private TrelloTestContext trelloTestContext;
   private boolean isTestSuccess;
 
-  @BeforeClass
+  @BeforeClass(alwaysRun = true)
   public void setUp() {
     try {
       logInfo("Setting up ChecklistTest...");
