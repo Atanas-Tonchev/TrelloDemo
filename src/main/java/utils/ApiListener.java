@@ -47,10 +47,6 @@ public class ApiListener implements IClassListener, ISuiteListener {
     } else if (className.equals("CardWorkflowTest")) {
       logInfo(">> Executing prerequisite: initialize Trello Card model and validations");
 
-      // listsValidation = new ListsValidation();
-      //
-      //      boardValidation = new BoardValidation();
-      //      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
     }
   }
 
@@ -67,10 +63,6 @@ public class ApiListener implements IClassListener, ISuiteListener {
       logInfo("No test results for " + className);
     }
     logInfo("=== End of class: " + className + " ===");
-  }
-
-  private void executePrerequisites() {
-
   }
 
 }
