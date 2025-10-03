@@ -3,7 +3,7 @@ package clients;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
-public class TrelloCardClient extends AbstractTrelloClient{
+public class TrelloCardClient extends AbstractTrelloClient {
 
   public TrelloCardClient(String apiKey, String authToken, String baseUrl) {
     super(apiKey, authToken, baseUrl);

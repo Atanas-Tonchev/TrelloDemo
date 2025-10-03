@@ -91,9 +91,9 @@ public class ChecklistTest extends BaseTest {
       logException("Exception in addChecklistWithItemsToCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("ChecklistTest.addChecklistWithItemsToCard","FAILED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.addChecklistWithItemsToCard", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("ChecklistTest.addChecklistWithItemsToCard","PASSED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.addChecklistWithItemsToCard", "PASSED");
       }
     }
   }
@@ -143,9 +143,9 @@ public class ChecklistTest extends BaseTest {
       logException("Exception in manageChecklistsOnCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("ChecklistTest.manageChecklistsOnCard","FAILED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.manageChecklistsOnCard", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("ChecklistTest.manageChecklistsOnCard","PASSED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.manageChecklistsOnCard", "PASSED");
       }
     }
   }
@@ -153,7 +153,7 @@ public class ChecklistTest extends BaseTest {
 
   @Test(groups = {TRELLO_API_TESTING},
       priority = 3,
-      dependsOnMethods = {"addChecklistWithItemsToCard","manegeChecklistsOnCard"})
+      dependsOnMethods = {"addChecklistWithItemsToCard", "manegeChecklistsOnCard"})
   public void retrieveAndValidateCheckListsWithItems() {
     logInfo("Starting test: retrieveAndValidateCheckListsWithItems");
     try {
@@ -212,9 +212,9 @@ public class ChecklistTest extends BaseTest {
       logException("Exception in retrieveAndValidateCheckListsWithItems: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("ChecklistTest.retrieveAndValidateCheckListsWithItems","FAILED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.retrieveAndValidateCheckListsWithItems", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("ChecklistTest.retrieveAndValidateCheckListsWithItems","PASSED");
+        TrelloTestResult.getInstance().putResult("ChecklistTest.retrieveAndValidateCheckListsWithItems", "PASSED");
       }
     }
   }

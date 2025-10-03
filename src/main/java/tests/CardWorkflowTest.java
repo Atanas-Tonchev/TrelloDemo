@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import models.TrelloCardModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import services.TrelloBoardServiceImpl;
@@ -22,6 +23,7 @@ import static constants.AutomationConstants.BOARD_NAME;
 import static constants.AutomationConstants.CARD_NAME;
 import static constants.AutomationConstants.LIST_NAME_TODO;
 import static constants.AutomationConstants.TRELLO_API_TESTING;
+import static constants.AutomationConstants.TRELLO_COMMENT_TEXT;
 import static org.testng.Assert.assertNotNull;
 import static utils.LogUtil.logException;
 import static utils.LogUtil.logInfo;
@@ -56,6 +58,12 @@ public class CardWorkflowTest extends BaseTest {
     }
   }
 
+  @BeforeMethod
+  public void beforeEachTest() {
+    // Refresh test context before each test
+    trelloTestContext = TrelloTestContext.getInstance();
+  }
+
 
   @Test(groups = {TRELLO_API_TESTING}, priority = 1)
 
@@ -84,9 +92,9 @@ public class CardWorkflowTest extends BaseTest {
       logException("Exception in testCreateTitledCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testCreateTitledCard","FAILED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testCreateTitledCard", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testCreateTitledCard","PASSED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testCreateTitledCard", "PASSED");
       }
     }
   }
@@ -125,9 +133,9 @@ public class CardWorkflowTest extends BaseTest {
       logException("Exception in testMoveCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testMoveCard","FAILED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testMoveCard", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testMoveCard","PASSED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testMoveCard", "PASSED");
       }
     }
   }
@@ -137,10 +145,9 @@ public class CardWorkflowTest extends BaseTest {
       dependsOnMethods = {"testCreateTitledCard", "testMoveCard"})
   public void testAddCommentToCard() {
     logInfo("Starting test: testAddCommentToCard");
-    String commentText = trelloTestContext.getTrelloCardModel().getCommentToAdd();
     try {
       // Add a comment to the card
-      Response commentResponse = cardService.createCardComment(trelloTestContext.getTrelloCardModel().getId(), commentText);
+      Response commentResponse = cardService.createCardComment(trelloTestContext.getTrelloCardModel().getId(), TRELLO_COMMENT_TEXT);
       trelloTestContext.getCardValidation().assertSuccessResponseArray(commentResponse);
 
       // Retrieve the list of actions for the card
@@ -148,15 +155,15 @@ public class CardWorkflowTest extends BaseTest {
       trelloTestContext.getCardValidation().assertSuccessResponseMap(actionsResponse);
 
       // Validate the comment fields in the actions response
-      trelloTestContext.getCardValidation().validateCommentFields(commentResponse, commentText);
+      trelloTestContext.getCardValidation().validateCommentFields(commentResponse, TRELLO_COMMENT_TEXT);
       isTestSuccess = true;
     } catch (Exception e) {
       logException("Exception in testAddCommentToCard: " + e.getMessage(), e);
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testAddCommentToCard","FAILED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testAddCommentToCard", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testAddCommentToCard","PASSED");
+        TrelloTestResult.getInstance().putResult("CardWorkflowTest.testAddCommentToCard", "PASSED");
       }
     }
   }
@@ -183,7 +190,6 @@ public class CardWorkflowTest extends BaseTest {
       logException("Exception in executePrerequisites: " + e.getMessage(), e);
     }
   }
-
 
   // End Region
 

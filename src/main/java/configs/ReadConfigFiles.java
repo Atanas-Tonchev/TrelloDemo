@@ -11,6 +11,7 @@ import static utils.LogUtil.logException;
  */
 
 public class ReadConfigFiles {
+
   private static ReadConfigFiles instance;
 
   private ReadConfigFiles() {

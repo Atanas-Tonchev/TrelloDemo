@@ -10,6 +10,7 @@ import java.util.Properties;
  */
 
 public class CommonUtil {
+
   /**
    * Load properties from a file located in the same directory as the JAR file.
    *

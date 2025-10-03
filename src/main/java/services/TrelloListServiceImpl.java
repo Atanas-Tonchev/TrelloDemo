@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import static utils.LogUtil.logInfo;
 
 public class TrelloListServiceImpl implements ITrelloListService {
+
   private final TrelloListClient trelloListClient;
 
   public TrelloListServiceImpl(String apiKey, String authToken, String baseUrl) {

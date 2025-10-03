@@ -1,6 +1,7 @@
 package models;
 
 public class TrelloCardModel {
+
   private String id;
   private String name;
   private String idList;
@@ -36,10 +37,6 @@ public class TrelloCardModel {
 
   public void setIdList(String idList) {
     this.idList = idList;
-  }
-
-  public String getCommentToAdd() {
-    return "This is a test comment.";
   }
 
 }

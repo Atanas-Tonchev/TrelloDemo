@@ -5,6 +5,7 @@ package configs;
  */
 
 public class AppConfig {
+
   private String ApiKey;
   private String AuthToken;
   private String BaseUrl;

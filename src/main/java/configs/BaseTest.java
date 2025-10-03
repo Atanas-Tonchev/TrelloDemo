@@ -7,6 +7,7 @@ import static utils.LogUtil.logException;
  */
 
 public class BaseTest {
+
   public static AppConfig objConfig;
 
   static {

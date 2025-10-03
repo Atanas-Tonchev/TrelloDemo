@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TrelloCheckListModel {
+
   private String id;
   private String name;
-  private final Map<String,String> checkListIds = new HashMap<>();
+  private final Map<String, String> checkListIds = new HashMap<>();
 
   public TrelloCheckListModel() {
     // No-args constructor

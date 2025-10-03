@@ -12,12 +12,11 @@ public class Main {
     // to see how IntelliJ IDEA suggests fixing it.
     Logger logger = (Logger) LogManager.getLogger(Main.class);
 
-
     logger.debug("This is a debug message.");
     logger.info("This is an info message.");
     logger.warn("This is a warning message.");
     logger.error("This is an error message.");
 
 
-    }
   }
+}

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 public class AutomationConstants {
 
   public static final String TRELLO_API_TESTING = "TrelloAPITesting";
+  public static final String TRELLO_COMMENT_TEXT = "This is a test comment added by automation.";
   public static final String CARD_NAME = "Prepare Interview Task";
   public static final String BOARD_NAME = "Interview Board";
   public static final String LIST_NAME_TODO = "To Do";

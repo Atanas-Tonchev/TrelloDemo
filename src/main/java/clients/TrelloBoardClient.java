@@ -3,7 +3,7 @@ package clients;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
-public class TrelloBoardClient extends AbstractTrelloClient{
+public class TrelloBoardClient extends AbstractTrelloClient {
 
   public TrelloBoardClient(String apiKey, String authToken, String baseUrl) {
     super(apiKey, authToken, baseUrl);
@@ -17,10 +17,6 @@ public class TrelloBoardClient extends AbstractTrelloClient{
         .queryParam("name", name)
         .when()
         .post("/boards/");
-  }
-
-  public String getBoardIdByCreationResponse(Response creationResponse) {
-    return creationResponse.jsonPath().getString("id");
   }
 
   public String getBoardIdByName(String boardName) {

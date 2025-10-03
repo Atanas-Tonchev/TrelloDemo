@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import static utils.LogUtil.logInfo;
 
 public class TrelloBoardServiceImpl implements ITrelloBoardService {
+
   private final TrelloBoardClient client;
 
   public TrelloBoardServiceImpl(String apiKey, String authToken, String baseUrl) {

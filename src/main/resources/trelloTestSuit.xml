@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="ApiTrelloTest" verbose="1" > <!--parallel="classes" thread-count="4"-->
+<suite name="ApiTrelloTest" verbose="1"> <!--parallel="classes" thread-count="4"-->
   <test name="TrelloAPITesting">
     <groups>
       <run>
@@ -9,8 +9,8 @@
     </groups>
     <classes>
       <class name="tests.BoardSetupTest"/>
-<!--      <class name="tests.CardWorkflowTest"/>-->
-<!--      <class name="tests.ChecklistTest"/>-->
+      <class name="tests.CardWorkflowTest"/>
+      <class name="tests.ChecklistTest"/>
     </classes>
   </test>
 </suite>

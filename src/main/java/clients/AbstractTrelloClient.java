@@ -4,6 +4,7 @@ package clients;
 import io.restassured.RestAssured;
 
 public abstract class AbstractTrelloClient {
+
   protected String apiKey;
   protected String authToken;
   protected String baseUrl;

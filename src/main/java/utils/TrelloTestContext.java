@@ -5,6 +5,7 @@ import models.TrelloCardModel;
 import models.TrelloCheckListModel;
 
 public class TrelloTestContext {
+
   private static volatile TrelloTestContext instance;
   private TrelloBoardModel trelloBoardModel;
   private BoardValidation boardValidation;

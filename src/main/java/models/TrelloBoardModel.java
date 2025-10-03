@@ -1,6 +1,7 @@
 package models;
 
 public class TrelloBoardModel {
+
   private final String name;
   private String id;
 

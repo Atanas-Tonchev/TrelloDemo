@@ -81,9 +81,9 @@ public class BoardSetupTest extends BaseTest {
       throw e;
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateBoard","FAILED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateBoard", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateBoard","PASSED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateBoard", "PASSED");
       }
     }
 
@@ -109,7 +109,7 @@ public class BoardSetupTest extends BaseTest {
         trelloTestContext.getListValidation().assertSuccessResponseArray(response);
 
         // Extract list ID from the response, only after successful creation
-        String listId = trelloListService.getListIdByName(listName,boardId);
+        String listId = trelloListService.getListIdByName(listName, boardId);
 
         // Validate response body
         trelloTestContext.getListValidation().assertResponseBody(response, listName);
@@ -126,13 +126,12 @@ public class BoardSetupTest extends BaseTest {
       throw e;
     } finally {
       if (!isTestSuccess) {
-        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateListsOnBoard","FAILED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateListsOnBoard", "FAILED");
       } else {
-        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateListsOnBoard","PASSED");
+        TrelloTestResult.getInstance().putResult("BoardSetupTest.testCreateListsOnBoard", "PASSED");
       }
     }
   }
-
 
   // Region Helper Methods
 
