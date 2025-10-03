@@ -35,6 +35,11 @@ public class BoardSetupTest extends BaseTest {
   private Response response;
   private TrelloTestContext trelloTestContext;
 
+  /**
+   * Initializes test context, services, and configuration before running any tests in this class.
+   * Sets up required Trello services and test data.
+   * Logs setup progress and handles initialization exceptions.
+   */
   @BeforeClass(alwaysRun = true)
   public void setUp() {
     logInfo("Setting up BoardSetupTest...");
@@ -135,7 +140,13 @@ public class BoardSetupTest extends BaseTest {
 
   // Region Helper Methods
 
-  public void cleanAllBoardList(String boardId) {
+  /**
+   * Archives all existing lists on the specified Trello board.
+   * Iterates through all lists on the board and archives each one.
+   *
+   * @param boardId the ID of the Trello board whose lists will be archived
+   */
+  private void cleanAllBoardList(String boardId) {
     logInfo("Cleaning all existing lists from board");
     List<String> allListIds = getAllListIds(boardId);
     if (allListIds != null && !allListIds.isEmpty()) {
@@ -161,6 +172,10 @@ public class BoardSetupTest extends BaseTest {
 
   // End Region
 
+  /**
+   * Resets the test success flag to false after each test method.
+   * Ensures that the flag is cleared before the next test execution.
+   */
   @AfterMethod(alwaysRun = true)
   public void resetTestSuccessFlag() {
     isTestSuccess = false; // Always reset for the next test

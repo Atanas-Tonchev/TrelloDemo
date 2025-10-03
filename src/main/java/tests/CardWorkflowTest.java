@@ -27,6 +27,11 @@ import static org.testng.Assert.assertNotNull;
 import static utils.LogUtil.logException;
 import static utils.LogUtil.logInfo;
 
+/**
+ * TestNG test class for validating Trello card workflows.
+ * Covers card creation, movement between lists, and comment operations using the Trello API.
+ * Utilizes service and validation layers to ensure end-to-end workflow correctness.
+ */
 @Listeners({ApiListener.class})
 public class CardWorkflowTest extends BaseTest {
 
@@ -37,6 +42,11 @@ public class CardWorkflowTest extends BaseTest {
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
 
+  /**
+   * Initializes test context, services, and configuration before running any tests in this class.
+   * Sets up required Trello services and test data.
+   * Logs setup progress and handles initialization exceptions.
+   */
   @BeforeClass(alwaysRun = true)
   public void setUp() {
     try {
@@ -59,7 +69,6 @@ public class CardWorkflowTest extends BaseTest {
 
 
   @Test(groups = {TRELLO_API_TESTING}, priority = 1)
-
   public void testCreateTitledCard() {
     logInfo("Starting test: testCreateTitledCard");
     try {
@@ -163,6 +172,14 @@ public class CardWorkflowTest extends BaseTest {
 
   // Region: Helper Methods
 
+  /**
+   * Performs prerequisite operations required before running card workflow tests.
+   * <p>
+   * Ensures the Trello board exists (creates it if missing) and manages the required lists on the board.
+   * Populates the map of list names to their corresponding IDs for use in test methods.
+   * Logs progress and handles any exceptions during setup.
+   * </p>
+   */
   private void executePrerequisites() {
     logInfo("Executing prerequisite operations.");
     try {
@@ -186,6 +203,10 @@ public class CardWorkflowTest extends BaseTest {
 
   // End Region
 
+  /**
+   * Resets the test success flag to false after each test method.
+   * Ensures that the flag is cleared before the next test execution.
+   */
   @AfterMethod(alwaysRun = true)
   public void resetTestSuccessFlag() {
     isTestSuccess = false; // Always reset for the next test

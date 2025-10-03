@@ -32,6 +32,20 @@ import static org.testng.Assert.assertNotNull;
 import static utils.LogUtil.logException;
 import static utils.LogUtil.logInfo;
 
+/**
+ * TestNG test class for validating Trello checklist workflows on cards.
+ * <p>
+ * Covers checklist creation, item addition, item state management, and validation of checklist data
+ * using the Trello API. Utilizes service and validation layers to ensure end-to-end checklist functionality.
+ * </p>
+ * <ul>
+ *   <li>Initializes required Trello services and test data before running tests.</li>
+ *   <li>Tests adding checklists and items to a Trello card.</li>
+ *   <li>Manages and verifies checklist item states (complete/incomplete).</li>
+ *   <li>Retrieves and validates all checklists and their items on a card.</li>
+ *   <li>Logs test progress and results for reporting.</li>
+ * </ul>
+ */
 @Listeners({ApiListener.class})
 public class ChecklistTest extends BaseTest {
 
@@ -42,6 +56,11 @@ public class ChecklistTest extends BaseTest {
   private TrelloTestContext trelloTestContext;
   private boolean isTestSuccess;
 
+  /**
+   * Initializes test context, services, and configuration before running any tests in this class.
+   * Sets up required Trello services and test data.
+   * Logs setup progress and handles initialization exceptions.
+   */
   @BeforeClass(alwaysRun = true)
   public void setUp() {
     try {
@@ -220,6 +239,16 @@ public class ChecklistTest extends BaseTest {
   }
 
   // Region Helper Methods
+
+  /**
+   * Performs prerequisite setup for checklist tests.
+   * <p>
+   * Ensures the Trello board exists (creates it if missing), manages required lists,
+   * and ensures a test card is present for checklist operations. Updates the test context
+   * with relevant board, list, and card information for use in test methods.
+   * Logs progress and handles any exceptions during setup.
+   * </p>
+   */
   private void executePrerequisites() {
     logInfo("Executing prerequisite operations.");
     try {
@@ -259,6 +288,10 @@ public class ChecklistTest extends BaseTest {
 
   // End Region
 
+  /**
+   * Resets the test success flag to false after each test method.
+   * Ensures that the flag is cleared before the next test execution.
+   */
   @AfterMethod(alwaysRun = true)
   public void resetTestSuccessFlag() {
     isTestSuccess = false; // Always reset for the next test
