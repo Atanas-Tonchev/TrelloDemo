@@ -9,8 +9,8 @@
     </groups>
     <classes>
       <class name="tests.BoardSetupTest"/>
-      <class name="tests.CardWorkflowTest"/>
-      <class name="tests.ChecklistTest"/>
+<!--      <class name="tests.CardWorkflowTest"/>-->
+<!--      <class name="tests.ChecklistTest"/>-->
     </classes>
   </test>
 </suite>

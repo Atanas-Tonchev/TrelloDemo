@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static constants.AutomationConstants.BOARD_NAME;
+import static utils.LogUtil.logException;
 import static utils.LogUtil.logInfo;
 
 public class ApiListener implements IClassListener, ISuiteListener {
@@ -27,20 +28,48 @@ public class ApiListener implements IClassListener, ISuiteListener {
   public void onBeforeClass(ITestClass testClass) {
     String className = testClass.getRealClass().getSimpleName();
     logInfo("=== Starting class: " + className + " ===");
+    logInfo(">>>>>> Executing prerequisite: initialize Trello All models and validations <<<<<<");
+    TrelloTestContext trelloTestContext = TrelloTestContext.getInstance();
+    TrelloBoardModel trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
+    trelloBoardModel.setId(null);
+    trelloTestContext.setTrelloBoardModel(trelloBoardModel);
+    BoardValidation boardValidation = new BoardValidation();
+    trelloTestContext.setBoardValidation(boardValidation);
+    ListsValidation listValidation = new ListsValidation();
+    trelloTestContext.setListValidation(listValidation);
     // Execute prerequisite operations according to the class
-    if (className.equals("BoardSetupTest")) {
-      System.out.println(">> Executing prerequisite: initialize Trello board model and validations");
-      TrelloTestContext trelloTestContext = TrelloTestContext.getInstance();
-      TrelloBoardModel trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
-      trelloBoardModel.setId(null);
-      trelloTestContext.setTrelloBoardModel(trelloBoardModel);
-      BoardValidation boardValidation = new BoardValidation();
-      trelloTestContext.setBoardValidation(boardValidation);
-      ListsValidation listValidation = new ListsValidation();
-      trelloTestContext.setListValidation(listValidation);
-    } else if (className.equals("OrderApiTest")) {
-      System.out.println(">> Пререквизит: създаване на тестова поръчка");
-      // Тук може да извикаш API за създаване на order
+    if (className.equals("CardWorkflowTest")) {
+      logInfo(">>>> Executing prerequisite: initialize Trello Card model and validations <<<<");
+      CardValidation cardValidation = new CardValidation();
+      trelloTestContext.setCardValidation(cardValidation);
+
+      logInfo("Executing prerequisite operations.");
+      try {
+        // Search board by name, if not found create a new one with all expected lists
+        String boardId = boardService.getBoardIdByName(BOARD_NAME);
+
+        // Create board if not found
+        if (boardId == null) {
+          logInfo("Board not found, creating a new board.");
+          boardId = boardService.createBoardAndReturnId(trelloBoardModel);
+          // Validate board creation
+          boardValidation.assertIdNotNull(boardId);
+        }
+
+        mapOfLists = manageBoardLists(boardId);
+      } catch (Exception e) {
+        logException("Exception in executePrerequisites: " + e.getMessage(), e);
+      }
+
+
+
+    } else if (className.equals("CardWorkflowTest")) {
+      logInfo(">> Executing prerequisite: initialize Trello Card model and validations");
+
+      // listsValidation = new ListsValidation();
+      //
+      //      boardValidation = new BoardValidation();
+      //      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
     }
   }
 
@@ -57,6 +86,10 @@ public class ApiListener implements IClassListener, ISuiteListener {
       logInfo("No test results for " + className);
     }
     logInfo("=== End of class:" + className + " ===");
+  }
+
+  private void executePrerequisites() {
+
   }
 
 }

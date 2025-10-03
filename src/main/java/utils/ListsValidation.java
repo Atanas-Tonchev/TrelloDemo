@@ -53,7 +53,7 @@ public class ListsValidation extends ValidationUtil {
     logInfo("All lists are created and belong to the newly created board.");
   }
 
-  private List<String> getAllListByEntity(String boardId, String entityName, TrelloListServiceImpl trelloListService) {
+  public List<String> getAllListByEntity(String boardId, String entityName, TrelloListServiceImpl trelloListService) {
     if (boardId != null) {
       Response response = trelloListService.getAllListsOnBoard(boardId);
       return response.jsonPath().getList(entityName);

@@ -2,19 +2,17 @@ package tests;
 
 import configs.BaseTest;
 import io.restassured.response.Response;
-import models.TrelloBoardModel;
 import models.TrelloCardModel;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import services.TrelloBoardServiceImpl;
 import services.TrelloCardServiceImpl;
 import services.TrelloListServiceImpl;
-import utils.BoardValidation;
-import utils.CardValidation;
-import utils.ListsValidation;
+import utils.ApiListener;
+import utils.TrelloTestContext;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,15 +28,13 @@ import static org.testng.Assert.assertNotNull;
 import static utils.LogUtil.logException;
 import static utils.LogUtil.logInfo;
 
+@Listeners({ApiListener.class})
 public class CardWorkflowTest extends BaseTest {
 
+  private TrelloTestContext trelloTestContext;
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
   private TrelloCardServiceImpl cardService;
-  private ListsValidation listsValidation;
-  private CardValidation cardValidation;
-  private BoardValidation boardValidation;
-  private TrelloBoardModel trelloBoardModel;
   private TrelloCardModel trelloCardModel;
   Map<String, String> mapOfLists;
   private boolean isTestSuccess;
@@ -47,16 +43,13 @@ public class CardWorkflowTest extends BaseTest {
   public void setUp() {
     try {
       logInfo("Setting up CardWorkflowTest...");
+      trelloTestContext = TrelloTestContext.getInstance();
       String apiKey = objConfig.getApiKey();
       String authToken = objConfig.getAuthToken();
       String baseUrl = objConfig.getBaseUrl();
       boardService = new TrelloBoardServiceImpl(apiKey, authToken, baseUrl);
       cardService = new TrelloCardServiceImpl(apiKey, authToken, baseUrl);
       trelloListService = new TrelloListServiceImpl(apiKey, authToken, baseUrl);
-      listsValidation = new ListsValidation();
-      cardValidation = new CardValidation();
-      boardValidation = new BoardValidation();
-      trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       // Execute prerequisite operations
       executePrerequisites();
       isTestSuccess = false;
@@ -85,8 +78,8 @@ public class CardWorkflowTest extends BaseTest {
       trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
 
       // Validate response status code and body
-      cardValidation.assertSuccessResponseArray(response);
-      cardValidation.assertResponseBody(response, CARD_NAME);
+      trelloTestContext.getCardValidation().assertSuccessResponseArray(response);
+      trelloTestContext.getCardValidation().assertResponseBody(response, CARD_NAME);
 
       // Mark test as successful
       isTestSuccess = true;
@@ -122,10 +115,10 @@ public class CardWorkflowTest extends BaseTest {
         Response moveResponse = cardService.moveCardToList(trelloCardModel.getId(), targetListId);
 
         // Validate move response
-        cardValidation.assertSuccessResponseArray(moveResponse);
+        trelloTestContext.getCardValidation().assertSuccessResponseArray(moveResponse);
 
         // Verify the card is in the expected list by fetching it and validating its 'idList'
-        cardValidation.validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
+        trelloTestContext.getCardValidation().validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
 
         // Mark this list as visited
         visitedLists.add(targetListId);
@@ -151,14 +144,14 @@ public class CardWorkflowTest extends BaseTest {
     try {
       // Add a comment to the card
       Response commentResponse = cardService.createCardComment(trelloCardModel.getId(), commentText);
-      cardValidation.assertSuccessResponseArray(commentResponse);
+      trelloTestContext.getCardValidation().assertSuccessResponseArray(commentResponse);
 
       // Retrieve the list of actions for the card
       Response actionsResponse = cardService.getCardActionsById(trelloCardModel.getId());
-      cardValidation.assertSuccessResponseMap(actionsResponse);
+      trelloTestContext.getCardValidation().assertSuccessResponseMap(actionsResponse);
 
       // Validate the comment fields in the actions response
-      cardValidation.validateCommentFields(commentResponse, commentText);
+      trelloTestContext.getCardValidation().validateCommentFields(commentResponse, commentText);
       isTestSuccess = true;
     } catch (Exception e) {
       logException("Exception in testAddCommentToCard: " + e.getMessage(), e);
@@ -182,9 +175,9 @@ public class CardWorkflowTest extends BaseTest {
       // Create board if not found
       if (boardId == null) {
         logInfo("Board not found, creating a new board.");
-        boardId = boardService.createBoardAndReturnId(trelloBoardModel);
+        boardId = boardService.createBoardAndReturnId(trelloTestContext.getTrelloBoardModel());
         // Validate board creation
-        boardValidation.assertIdNotNull(boardId);
+        trelloTestContext.getBoardValidation().assertIdNotNull(boardId);
       }
 
       mapOfLists = manageBoardLists(boardId);
@@ -197,7 +190,7 @@ public class CardWorkflowTest extends BaseTest {
   private Map<String, String> manageBoardLists(String boardId) {
     logInfo("Managing board lists.");
     Map<String, String> mapOfLists = new LinkedHashMap<>();
-    List<String> actualList = getAllListByEntity(boardId, "name");
+    List<String> actualList = trelloTestContext.getListValidation().getAllListByEntity(boardId, "name", trelloListService);
 
     // Update existing lists or create new ones as necessary
     if (!actualList.isEmpty()) {
@@ -210,9 +203,9 @@ public class CardWorkflowTest extends BaseTest {
               .findFirst()
               .ifPresent(actualName -> {
                 String actualId = trelloListService.getListIdByName(actualName, boardId);
-                listsValidation.assertIdNotNull(actualId);
+                trelloTestContext.getListValidation().assertIdNotNull(actualId);
                 Response response = trelloListService.updateListName(actualId, expectedName);
-                listsValidation.assertStatusCode(response, 200);
+                trelloTestContext.getListValidation().assertStatusCode(response, 200);
                 logInfo("Updated list from: " + actualName + " to: " + expectedName);
               });
         }
@@ -222,30 +215,19 @@ public class CardWorkflowTest extends BaseTest {
       // Create new lists if none exist
       DEFAULT_LIST_NAMES.forEach(listName -> {
         Response response = trelloListService.createList(boardId, listName);
-        listsValidation.assertStatusCode(response, 200);
+        trelloTestContext.getListValidation().assertStatusCode(response, 200);
       });
     }
 
     // Repopulate map with all lists and their IDs
-    getAllListByEntity(boardId, "id").forEach(listId -> {
+
+    trelloTestContext.getListValidation().getAllListByEntity(boardId, "id", trelloListService).forEach(listId -> {
       Response response = trelloListService.getListById(listId);
-      listsValidation.assertStatusCode(response, 200);
+      trelloTestContext.getListValidation().assertStatusCode(response, 200);
       String listName = response.jsonPath().getString("name");
       mapOfLists.put(listName, listId);
     });
     return mapOfLists;
-  }
-
-
-  private List<String> getAllListByEntity(String boardId, String entityName) {
-    if (boardId != null) {
-      Response response = trelloListService.getAllListsOnBoard(boardId);
-      listsValidation.assertStatusCode(response, 200);
-      return response.jsonPath().getList(entityName);
-    } else {
-      logInfo("Board ID is null, cannot fetch lists.");
-      return new ArrayList<>();
-    }
   }
 
   // End Region

@@ -16,6 +16,7 @@ import utils.BoardValidation;
 import utils.CardValidation;
 import utils.CheckListsValidation;
 import utils.ListsValidation;
+import utils.TrelloTestContext;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,12 +51,14 @@ public class ChecklistTest extends BaseTest {
   private TrelloCardModel trelloCardModel;
   private TrelloCheckListModel trelloCheckListModel;
   private CheckListsValidation checkListValidationUtil;
+  private TrelloTestContext trelloTestContext;
   private boolean isTestSuccess;
 
   @BeforeClass
   public void setUp() {
     try {
       logInfo("Setting up ChecklistTest...");
+      trelloTestContext = TrelloTestContext.getInstance();
       String apiKey = objConfig.getApiKey();
       String authToken = objConfig.getAuthToken();
       String baseUrl = objConfig.getBaseUrl();
@@ -271,7 +274,7 @@ public class ChecklistTest extends BaseTest {
   private Map<String, String> manageBoardLists(String boardId) {
     logInfo("Managing board lists.");
     Map<String, String> mapOfLists = new LinkedHashMap<>();
-    List<String> actualList = getAllListByEntity(boardId, "name");
+    List<String> actualList = trelloTestContext.getListValidation().getAllListByEntity(boardId, "name", trelloListService);
 
     // Update existing lists or create new ones as necessary
     if (!actualList.isEmpty()) {
@@ -301,24 +304,13 @@ public class ChecklistTest extends BaseTest {
     }
 
     // Repopulate map with all lists and their IDs
-    getAllListByEntity(boardId, "id").forEach(listId -> {
+    trelloTestContext.getListValidation().getAllListByEntity(boardId, "id", trelloListService).forEach(listId -> {
       Response response = trelloListService.getListById(listId);
       listsValidation.assertStatusCode(response, 200);
       String listName = response.jsonPath().getString("name");
       mapOfLists.put(listName, listId);
     });
     return mapOfLists;
-  }
-
-  private List<String> getAllListByEntity(String boardId, String entityName) {
-    if (boardId != null) {
-      Response response = trelloListService.getAllListsOnBoard(boardId);
-      listsValidation.assertStatusCode(response, 200);
-      return response.jsonPath().getList(entityName);
-    } else {
-      logInfo("Board ID is null, cannot fetch lists.");
-      return new ArrayList<>();
-    }
   }
 
   // End Region

@@ -7,6 +7,7 @@ public class TrelloTestContext {
   private TrelloBoardModel trelloBoardModel;
   private BoardValidation boardValidation;
   private ListsValidation listValidation;
+  private CardValidation cardValidation;
 
   public static TrelloTestContext getInstance() {
     if (instance == null) {
@@ -41,5 +42,13 @@ public class TrelloTestContext {
 
   public void setListValidation(ListsValidation listValidation) {
     this.listValidation = listValidation;
+  }
+
+  public CardValidation getCardValidation() {
+    return cardValidation;
+  }
+
+  public void setCardValidation(CardValidation cardValidation) {
+    this.cardValidation = cardValidation;
   }
 }
