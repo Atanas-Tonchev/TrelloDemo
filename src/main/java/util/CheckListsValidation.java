@@ -4,7 +4,7 @@ import io.restassured.response.Response;
 
 import static util.LogUtil.logInfo;
 
-public class CheckListsValidationUtil extends ValidationUtil {
+public class CheckListsValidation extends ValidationUtil {
 
   @Override
   public void assertSuccessResponseArray(Response response) {

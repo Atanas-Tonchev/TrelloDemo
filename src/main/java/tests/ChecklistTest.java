@@ -12,10 +12,10 @@ import services.TrelloBoardServiceImpl;
 import services.TrelloCardServiceImpl;
 import services.TrelloCheckListServiceImpl;
 import services.TrelloListServiceImpl;
-import util.BoardValidationUtil;
-import util.CardValidationUtil;
-import util.CheckListsValidationUtil;
-import util.ListsValidationUtil;
+import util.BoardValidation;
+import util.CardValidation;
+import util.CheckListsValidation;
+import util.ListsValidation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,13 +42,13 @@ public class ChecklistTest extends BaseTest {
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
   private TrelloCardServiceImpl cardService;
-  private ListsValidationUtil listsValidationUtil;
-  private CardValidationUtil cardValidationUtil;
-  private BoardValidationUtil boardValidationUtil;
+  private ListsValidation listsValidation;
+  private CardValidation cardValidation;
+  private BoardValidation boardValidation;
   private TrelloBoardModel trelloBoardModel;
   private TrelloCardModel trelloCardModel;
   private TrelloCheckListModel trelloCheckListModel;
-  private CheckListsValidationUtil checkListValidationUtil;
+  private CheckListsValidation checkListValidationUtil;
   private boolean isTestSuccess;
 
   @BeforeClass
@@ -62,13 +62,13 @@ public class ChecklistTest extends BaseTest {
       cardService = new TrelloCardServiceImpl(apiKey, authToken, baseUrl);
       trelloCheckListService = new TrelloCheckListServiceImpl(apiKey, authToken, baseUrl);
       trelloListService = new TrelloListServiceImpl(apiKey, authToken, baseUrl);
-      listsValidationUtil = new ListsValidationUtil();
-      cardValidationUtil = new CardValidationUtil();
-      boardValidationUtil = new BoardValidationUtil();
+      listsValidation = new ListsValidation();
+      cardValidation = new CardValidation();
+      boardValidation = new BoardValidation();
       trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       trelloCheckListModel = new TrelloCheckListModel();
       trelloCardModel = new TrelloCardModel();
-      checkListValidationUtil = new CheckListsValidationUtil();
+      checkListValidationUtil = new CheckListsValidation();
       // Execute prerequisite operations
       executePrerequisites();
       isTestSuccess = false;
@@ -238,7 +238,7 @@ public class ChecklistTest extends BaseTest {
       if (boardId == null) {
         logInfo("Board not found, creating a new board.");
         boardId = boardService.createBoardAndReturnId(trelloBoardModel);
-        boardValidationUtil.assertIdNotNull(boardId);
+        boardValidation.assertIdNotNull(boardId);
       }
       Map<String, String> mapOfLists = manageBoardLists(boardId);
       // Check if card exists and create if not
@@ -256,8 +256,8 @@ public class ChecklistTest extends BaseTest {
       Response response = cardService.createCard(listId, CARD_NAME);
       trelloCardModel = new TrelloCardModel(CARD_NAME, listId);
       trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
-      cardValidationUtil.assertSuccessResponseArray(response);
-      cardValidationUtil.assertResponseBody(response, CARD_NAME);
+      cardValidation.assertSuccessResponseArray(response);
+      cardValidation.assertResponseBody(response, CARD_NAME);
     } catch (Exception e) {
       logException("Exception in executePrerequisites: " + e.getMessage(), e);
     }
@@ -279,9 +279,9 @@ public class ChecklistTest extends BaseTest {
               .findFirst()
               .ifPresent(actualName -> {
                 String actualId = trelloListService.getListIdByName(actualName, boardId);
-                listsValidationUtil.assertIdNotNull(actualId);
+                listsValidation.assertIdNotNull(actualId);
                 Response response = trelloListService.updateListName(actualId, expectedName);
-                listsValidationUtil.assertStatusCode(response, 200);
+                listsValidation.assertStatusCode(response, 200);
                 logInfo("Updated list from: " + actualName + " to: " + expectedName);
               });
         }
@@ -291,14 +291,14 @@ public class ChecklistTest extends BaseTest {
       // Create new lists if none exist
       DEFAULT_LIST_NAMES.forEach(listName -> {
         Response response = trelloListService.createList(boardId, listName);
-        listsValidationUtil.assertStatusCode(response, 200);
+        listsValidation.assertStatusCode(response, 200);
       });
     }
 
     // Repopulate map with all lists and their IDs
     getAllListByEntity(boardId, "id").forEach(listId -> {
       Response response = trelloListService.getListById(listId);
-      listsValidationUtil.assertStatusCode(response, 200);
+      listsValidation.assertStatusCode(response, 200);
       String listName = response.jsonPath().getString("name");
       mapOfLists.put(listName, listId);
     });
@@ -308,7 +308,7 @@ public class ChecklistTest extends BaseTest {
   private List<String> getAllListByEntity(String boardId, String entityName) {
     if (boardId != null) {
       Response response = trelloListService.getAllListsOnBoard(boardId);
-      listsValidationUtil.assertStatusCode(response, 200);
+      listsValidation.assertStatusCode(response, 200);
       return response.jsonPath().getList(entityName);
     } else {
       logInfo("Board ID is null, cannot fetch lists.");

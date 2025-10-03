@@ -11,7 +11,7 @@ import static org.testng.Assert.assertEqualsNoOrder;
 import static org.testng.Assert.assertNotNull;
 import static util.LogUtil.logInfo;
 
-public class ListsValidationUtil extends ValidationUtil {
+public class ListsValidation extends ValidationUtil {
 
   @Override
   public void assertSuccessResponseArray(Response response) {

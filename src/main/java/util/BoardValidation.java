@@ -5,7 +5,7 @@ import io.restassured.response.Response;
 import static org.testng.Assert.assertNotNull;
 import static util.LogUtil.logInfo;
 
-public final class BoardValidationUtil extends ValidationUtil {
+public final class BoardValidation extends ValidationUtil {
 
   @Override
   public void assertSuccessResponseArray(Response response) {

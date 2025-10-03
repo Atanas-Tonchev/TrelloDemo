@@ -14,8 +14,8 @@ import static util.LogUtil.logInfo;
 
 import services.TrelloBoardServiceImpl;
 import services.TrelloListServiceImpl;
-import util.BoardValidationUtil;
-import util.ListsValidationUtil;
+import util.BoardValidation;
+import util.ListsValidation;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,8 +30,8 @@ public class BoardSetupTest extends BaseTest {
   private TrelloBoardModel trelloBoardModel;
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
-  private BoardValidationUtil boardValidationUtil;
-  private ListsValidationUtil listValidationUtil;
+  private BoardValidation boardValidation;
+  private ListsValidation listValidationUtil;
   private LinkedList<String> listNames;
   private boolean isTestSuccess;
   private Response response;
@@ -42,8 +42,8 @@ public class BoardSetupTest extends BaseTest {
     try {
       trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       trelloBoardModel.setId(null);
-      boardValidationUtil = new BoardValidationUtil();
-      listValidationUtil = new ListsValidationUtil();
+      boardValidation = new BoardValidation();
+      listValidationUtil = new ListsValidation();
       isTestSuccess = false;
       String apiKey = objConfig.getApiKey();
       String authToken = objConfig.getAuthToken();
@@ -67,13 +67,13 @@ public class BoardSetupTest extends BaseTest {
       response = boardService.createBoard(trelloBoardModel.getName());
 
       // Verify board creation
-      boardValidationUtil.assertSuccessResponseArray(response);
+      boardValidation.assertSuccessResponseArray(response);
 
       // Extract and set the board ID, only after successful creation
       trelloBoardModel.setId(boardService.getBoardIdByCreationResponse(response));
 
       // Validate response body
-      boardValidationUtil.assertResponseBody(response, trelloBoardModel.getName());
+      boardValidation.assertResponseBody(response, trelloBoardModel.getName());
 
       // mark test as success
       isTestSuccess = true;

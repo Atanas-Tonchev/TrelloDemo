@@ -8,7 +8,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static util.LogUtil.logInfo;
 
-public class CardValidationUtil extends ValidationUtil {
+public class CardValidation extends ValidationUtil {
 
   @Override
   public void assertSuccessResponseArray(Response response) {

@@ -9,9 +9,9 @@ import org.testng.annotations.Test;
 import services.TrelloBoardServiceImpl;
 import services.TrelloCardServiceImpl;
 import services.TrelloListServiceImpl;
-import util.BoardValidationUtil;
-import util.CardValidationUtil;
-import util.ListsValidationUtil;
+import util.BoardValidation;
+import util.CardValidation;
+import util.ListsValidation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,9 +34,9 @@ public class CardWorkflowTest {
   private TrelloBoardServiceImpl boardService;
   private TrelloListServiceImpl trelloListService;
   private TrelloCardServiceImpl cardService;
-  private ListsValidationUtil listsValidationUtil;
-  private CardValidationUtil cardValidationUtil;
-  private BoardValidationUtil boardValidationUtil;
+  private ListsValidation listsValidation;
+  private CardValidation cardValidation;
+  private BoardValidation boardValidation;
   private TrelloBoardModel trelloBoardModel;
   private TrelloCardModel trelloCardModel;
   Map<String, String> mapOfLists;
@@ -52,9 +52,9 @@ public class CardWorkflowTest {
       boardService = new TrelloBoardServiceImpl(apiKey, authToken, baseUrl);
       cardService = new TrelloCardServiceImpl(apiKey, authToken, baseUrl);
       trelloListService = new TrelloListServiceImpl(apiKey, authToken, baseUrl);
-      listsValidationUtil = new ListsValidationUtil();
-      cardValidationUtil = new CardValidationUtil();
-      boardValidationUtil = new BoardValidationUtil();
+      listsValidation = new ListsValidation();
+      cardValidation = new CardValidation();
+      boardValidation = new BoardValidation();
       trelloBoardModel = new TrelloBoardModel(BOARD_NAME);
       // Execute prerequisite operations
       executePrerequisites();
@@ -84,8 +84,8 @@ public class CardWorkflowTest {
       trelloCardModel.setId(cardService.getCardIdByCreationResponse(response));
 
       // Validate response status code and body
-      cardValidationUtil.assertSuccessResponseArray(response);
-      cardValidationUtil.assertResponseBody(response, CARD_NAME);
+      cardValidation.assertSuccessResponseArray(response);
+      cardValidation.assertResponseBody(response, CARD_NAME);
 
       // Mark test as successful
       isTestSuccess = true;
@@ -119,10 +119,10 @@ public class CardWorkflowTest {
         Response moveResponse = cardService.moveCardToList(trelloCardModel.getId(), targetListId);
 
         // Validate move response
-        cardValidationUtil.assertSuccessResponseArray(moveResponse);
+        cardValidation.assertSuccessResponseArray(moveResponse);
 
         // Verify the card is in the expected list by fetching it and validating its 'idList'
-        cardValidationUtil.validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
+        cardValidation.validateCardInListAfterMoving(cardService, trelloCardModel, targetListId, entry.getKey());
 
         // Mark this list as visited
         visitedLists.add(targetListId);
@@ -146,14 +146,14 @@ public class CardWorkflowTest {
     try {
       // Add a comment to the card
       Response commentResponse = cardService.createCardComment(trelloCardModel.getId(), commentText);
-      cardValidationUtil.assertSuccessResponseArray(commentResponse);
+      cardValidation.assertSuccessResponseArray(commentResponse);
 
       // Retrieve the list of actions for the card
       Response actionsResponse = cardService.getCardActionsById(trelloCardModel.getId());
-      cardValidationUtil.assertSuccessResponseMap(actionsResponse);
+      cardValidation.assertSuccessResponseMap(actionsResponse);
 
       // Validate the comment fields in the actions response
-      cardValidationUtil.validateCommentFields(commentResponse, commentText);
+      cardValidation.validateCommentFields(commentResponse, commentText);
       isTestSuccess = true;
     } catch (Exception e) {
       logException("Exception in testAddCommentToCard: " + e.getMessage(), e);
@@ -179,7 +179,7 @@ public class CardWorkflowTest {
         logInfo("Board not found, creating a new board.");
         boardId = boardService.createBoardAndReturnId(trelloBoardModel);
         // Validate board creation
-        boardValidationUtil.assertIdNotNull(boardId);
+        boardValidation.assertIdNotNull(boardId);
       }
 
       mapOfLists = manageBoardLists(boardId);
@@ -205,9 +205,9 @@ public class CardWorkflowTest {
               .findFirst()
               .ifPresent(actualName -> {
                 String actualId = trelloListService.getListIdByName(actualName, boardId);
-                listsValidationUtil.assertIdNotNull(actualId);
+                listsValidation.assertIdNotNull(actualId);
                 Response response = trelloListService.updateListName(actualId, expectedName);
-                listsValidationUtil.assertStatusCode(response, 200);
+                listsValidation.assertStatusCode(response, 200);
                 logInfo("Updated list from: " + actualName + " to: " + expectedName);
               });
         }
@@ -217,14 +217,14 @@ public class CardWorkflowTest {
       // Create new lists if none exist
       DEFAULT_LIST_NAMES.forEach(listName -> {
         Response response = trelloListService.createList(boardId, listName);
-        listsValidationUtil.assertStatusCode(response, 200);
+        listsValidation.assertStatusCode(response, 200);
       });
     }
 
     // Repopulate map with all lists and their IDs
     getAllListByEntity(boardId, "id").forEach(listId -> {
       Response response = trelloListService.getListById(listId);
-      listsValidationUtil.assertStatusCode(response, 200);
+      listsValidation.assertStatusCode(response, 200);
       String listName = response.jsonPath().getString("name");
       mapOfLists.put(listName, listId);
     });
@@ -235,7 +235,7 @@ public class CardWorkflowTest {
   private List<String> getAllListByEntity(String boardId, String entityName) {
     if (boardId != null) {
       Response response = trelloListService.getAllListsOnBoard(boardId);
-      listsValidationUtil.assertStatusCode(response, 200);
+      listsValidation.assertStatusCode(response, 200);
       return response.jsonPath().getList(entityName);
     } else {
       logInfo("Board ID is null, cannot fetch lists.");
