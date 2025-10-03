@@ -13,18 +13,41 @@ import java.util.Map;
 import static constants.AutomationConstants.BOARD_NAME;
 import static utils.LogUtil.logInfo;
 
+/**
+ * Listener for TestNG test suite and class events.
+ * Initializes Trello models and validations before test classes,
+ * and logs test suite/class execution details.
+ */
 public class ApiListener implements IClassListener, ISuiteListener {
 
+  /**
+   * Called when a TestNG suite starts.
+   * Logs the start of the test suite.
+   *
+   * @param iSuite the TestNG suite
+   */
   @Override
   public void onStart(org.testng.ISuite iSuite) {
     logInfo("=== === Executing test suit: " + iSuite.getName() + " === ===");
   }
 
+  /**
+   * Called when a TestNG suite finishes.
+   * Logs the completion of the test suite.
+   *
+   * @param iSuite the TestNG suite
+   */
   @Override
   public void onFinish(org.testng.ISuite iSuite) {
     logInfo("=== === " + iSuite.getName() + " Test Suite execution completed. === ===");
   }
 
+  /**
+   * Called before a test class is executed.
+   * Initializes Trello models and validations based on the test class.
+   *
+   * @param testClass the TestNG test class
+   */
   @Override
   public void onBeforeClass(ITestClass testClass) {
     String className = testClass.getRealClass().getSimpleName();
@@ -59,6 +82,12 @@ public class ApiListener implements IClassListener, ISuiteListener {
     }
   }
 
+  /**
+   * Called after a test class is executed.
+   * Logs the test results for the class.
+   *
+   * @param testClass the TestNG test class
+   */
   @Override
   public void onAfterClass(ITestClass testClass) {
     String className = testClass.getRealClass().getSimpleName();
